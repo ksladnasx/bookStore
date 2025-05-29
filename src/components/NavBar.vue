@@ -64,7 +64,7 @@ function logout() {
         <template #title>
           <el-avatar size="small" :icon="'UserFilled'" />
           <span class="username">{{ currentUser?.name }}</span>
-        </template>
+        </template> 
         <el-menu-item index="logout">Logout</el-menu-item>
       </el-sub-menu>
     </template>
