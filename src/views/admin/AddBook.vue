@@ -91,7 +91,7 @@ const handleCancel = () => {
 <template>
   <div class="add-book">
     <div class="form-header">
-      <h2>Add New Book</h2>
+      <h2>新增书籍</h2>
     </div>
     
     <el-form

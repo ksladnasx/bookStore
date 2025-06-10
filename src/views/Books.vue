@@ -22,14 +22,14 @@ function resetFilters() {
 <template>
   <div class="books-container">
     <div class="books-header">
-      <h1>Book Collection</h1>
-      <p>Browse our extensive library collection</p>
+      <h1>书籍汇总</h1>
+      <p>借阅任何可以借阅的书籍</p>
     </div>
 
     <div class="filter-section">
       <el-input
         v-model="bookStore.searchQuery"
-        placeholder="Search books by title, author or ISBN"
+        placeholder="通过标题, 作者或者 ISBN码搜索书籍"
         class="search-input"
         clearable
       >
@@ -40,7 +40,7 @@ function resetFilters() {
 
       <el-select
         v-model="bookStore.categoryFilter"
-        placeholder="Filter by category"
+        placeholder="类型"
         clearable
         class="category-filter"
       >

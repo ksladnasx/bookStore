@@ -15,15 +15,15 @@ const recentBooks = computed(() => {
 <template>
   <div class="home-container">
     <div class="hero-section">
-      <h1>Welcome to Our Library</h1>
+      <h1>Welcome to My Library</h1>
       <p>Discover, borrow, and enjoy thousands of books from our collection.</p>
       <el-button type="primary" size="large" @click="router.push('/books')">
-        Browse Books
+        借书 <el-icon><ArrowRight /></el-icon>
       </el-button>
     </div>
 
     <div class="features-section">
-      <h2>Library Features</h2>
+      <h2>书店特色</h2>
       <div class="features-grid">
         <div class="feature-item">
           <el-icon><Document /></el-icon>
@@ -50,9 +50,9 @@ const recentBooks = computed(() => {
 
     <div class="recent-books">
       <div class="section-header">
-        <h2>Recent Additions</h2>
+        <h2>最近添加</h2>
         <el-button type="text" @click="router.push('/books')">
-          View All <el-icon><ArrowRight /></el-icon>
+         全部 <el-icon><ArrowRight /></el-icon>
         </el-button>
       </div>
       <div class="book-grid">

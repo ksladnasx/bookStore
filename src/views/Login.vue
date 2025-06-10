@@ -58,8 +58,8 @@ const resetForm = (formEl: FormInstance | undefined) => {
     <el-card class="login-card">
       <template #header>
         <div class="card-header">
-          <h1>Log In</h1>
-          <p>Enter your credentials to access your account</p>
+          <h1>登录</h1>
+          <p>请输入账号密码来进行个性化您的图书借阅</p>
         </div>
       </template>
       
@@ -95,20 +95,20 @@ const resetForm = (formEl: FormInstance | undefined) => {
         </el-form-item>
         
         <div class="form-actions">
-          <el-button @click="resetForm(formRef)">Reset</el-button>
+          <el-button @click="resetForm(formRef)">重置</el-button>
           <el-button 
             type="primary" 
             @click="submitForm(formRef)"
             :loading="loading"
           >
-            Log In
+            登录
           </el-button>
         </div>
         
         <div class="login-info">
-          <p><strong>Demo Accounts:</strong></p>
-          <p>Admin: username: <code>admin</code> / password: <code>admin123</code></p>
-          <p>User: username: <code>user1</code> / password: <code>user123</code></p>
+          <p><strong>测试账户:</strong></p>
+          <p>管理员: username: <code>admin</code> / password: <code>admin123</code></p>
+          <p>普通用户: username: <code>user1</code> / password: <code>user123</code></p>
         </div>
       </el-form>
     </el-card>

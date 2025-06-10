@@ -41,7 +41,7 @@ export const useBookStore = defineStore('books', () => {
     return books.value.find(book => book.id === id) || null
   }
 
-  function addBook(book: Omit<Book, 'id' | 'borrowedBy'>) {
+  function addBook(book: any) {
     loading.value = true
     
     // Simulate API request delay

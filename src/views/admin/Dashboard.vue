@@ -115,7 +115,7 @@ const recentBorrowings = computed(() => {
       <el-card class="chart-card">
         <template #header>
           <div class="card-header">
-            <h3>Books by Category</h3>
+            <h3>书籍类型占比</h3>
           </div>
         </template>
 
@@ -136,8 +136,8 @@ const recentBorrowings = computed(() => {
       <el-card class="recent-borrowings-card">
         <template #header>
           <div class="card-header">
-            <h3>Recent Borrowings</h3>
-            <el-link type="primary" @click="router.push('/admin/borrowings')">View All</el-link>
+            <h3>最近借阅</h3>
+            <el-link type="primary" @click="router.push('/admin/borrowings')">全部 ></el-link>
           </div>
         </template>
 
@@ -156,7 +156,7 @@ const recentBorrowings = computed(() => {
     <el-card>
       <template #header>
         <div class="card-header">
-          <h3>Quick Actions</h3>
+          <h3>快捷操作</h3>
         </div>
       </template>
 
@@ -164,19 +164,19 @@ const recentBorrowings = computed(() => {
         <el-button type="primary" @click="router.push('/admin/books/add')">
           <el-icon>
             <Plus />
-          </el-icon> Add New Book
+          </el-icon> 添加书籍
         </el-button>
 
         <el-button @click="router.push('/admin/borrowings')">
           <el-icon>
             <View />
-          </el-icon> Manage Borrowings
+          </el-icon> 管理书籍
         </el-button>
 
         <el-button @click="router.push('/admin/users')">
           <el-icon>
             <User />
-          </el-icon> Manage Users
+          </el-icon> 用户管理
         </el-button>
       </div>
     </el-card>

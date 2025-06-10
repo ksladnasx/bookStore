@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 
+
 const router = useRouter()
 const authStore = useAuthStore()
 
@@ -10,9 +11,9 @@ const isAuthenticated = computed(() => authStore.isAuthenticated)
 const isAdmin = computed(() => authStore.isAdmin)
 const currentUser = computed(() => authStore.currentUser)
 
-const activeIndex = ref('1')
 
 function handleSelect(key: string) {
+  authStore.changeactiveIndex(key)
   switch (key) {
     case '1':
       router.push('/')
@@ -43,18 +44,18 @@ function logout() {
 
 <template>
   <el-menu
-    :default-active="activeIndex"
+    :default-active="authStore.activeIndex"
     class="el-menu-demo"
     mode="horizontal"
     @select="handleSelect"
     router
   >
-    <el-menu-item index="1">Library System</el-menu-item>
-    <el-menu-item index="2">Books</el-menu-item>
+    <el-menu-item index="1">系统主页</el-menu-item>
+    <el-menu-item index="2">书籍汇总</el-menu-item>
     
     <template v-if="isAuthenticated">
-      <el-menu-item index="3">My Books</el-menu-item>
-      <el-menu-item v-if="isAdmin" index="4">Admin Panel</el-menu-item>
+      <el-menu-item index="3">我的借阅</el-menu-item>
+      <el-menu-item v-if="isAdmin" index="4">管理面板</el-menu-item>
     </template>
     
     <div class="flex-spacer"></div>
@@ -65,12 +66,12 @@ function logout() {
           <el-avatar size="small" :icon="'UserFilled'" />
           <span class="username">{{ currentUser?.name }}</span>
         </template> 
-        <el-menu-item index="logout">Logout</el-menu-item>
+        <el-menu-item index="logout">登出</el-menu-item>
       </el-sub-menu>
     </template>
     
     <template v-else>
-      <el-menu-item index="login">Login</el-menu-item>
+      <el-menu-item index="login">登录</el-menu-item>
     </template>
   </el-menu>
 </template>
