@@ -71,13 +71,13 @@ const isDark = computed(() => theme.isdark);
       <el-menu-item index="3">{{ $t('layout3') }}</el-menu-item>
       <el-menu-item v-if="isAdmin" index="4">{{ $t('layout4') }}</el-menu-item>
     </template>
-
-    <div class="flex-spacer"></div>
-
-    <!-- 右侧操作区 -->
      <div>
       <ThemeSwitcher v-model:is-dark="isDark" />
       </div>
+    <div class="flex-spacer"></div>
+
+    <!-- 右侧操作区 -->
+    
     <div class="navbar-actions">
       
       <el-menu-item @click="toggleLanguage">
@@ -95,7 +95,11 @@ const isDark = computed(() => theme.isdark);
       <template v-if="isAuthenticated">
         <el-sub-menu index="user">
           <template #title>
-            <el-avatar size="small" :icon="'UserFilled'" />
+             <div>
+      <el-avatar
+        src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" 
+      />
+    </div>
             <span class="username">{{ currentUser?.name }}</span>
           </template> 
           <el-menu-item index="logout">{{ $t('logout') }}</el-menu-item>

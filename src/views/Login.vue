@@ -51,15 +51,19 @@ const resetForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return
   formEl.resetFields()
 }
+import { useTheme } from '../stores/theme';
+
+const theme = useTheme();
+const isDark = computed(() => theme.isdark);
 </script>
 
 <template>
-  <div class="login-container">
-    <el-card class="login-card">
+  <div class="login-container" :class="{ 'dark-mode': isDark }">
+    <el-card class="login-card" :class="{ 'dark-mode': isDark }">
       <template #header>
-        <div class="card-header">
-          <h1>登录</h1>
-          <p>请输入账号密码来进行个性化您的图书借阅</p>
+        <div class="card-header" :class="{ 'dark-mode': isDark }">
+          <h1 :class="{ 'dark-mode': isDark }">登录</h1>
+          <p :class="{ 'dark-mode': isDark }">请输入账号密码来进行个性化您的图书借阅</p>
         </div>
       </template>
       
@@ -68,6 +72,7 @@ const resetForm = (formEl: FormInstance | undefined) => {
         :model="loginForm"
         :rules="rules"
         label-position="top"
+        :class="{ 'dark-mode': isDark }"
       >
         <el-alert
           v-if="error"
@@ -82,6 +87,7 @@ const resetForm = (formEl: FormInstance | undefined) => {
           <el-input 
             v-model="loginForm.username" 
             placeholder="Enter your username"
+            :class="{ 'dark-mode': isDark }"
           />
         </el-form-item>
         
@@ -91,10 +97,12 @@ const resetForm = (formEl: FormInstance | undefined) => {
             type="password" 
             placeholder="Enter your password"
             show-password
+            :class="{ 'dark-mode': isDark }"
           />
         </el-form-item>
         
         <div class="form-actions">
+          <el-button @click="()=>{router.back()}">返回</el-button>
           <el-button @click="resetForm(formRef)">重置</el-button>
           <el-button 
             type="primary" 
@@ -105,7 +113,7 @@ const resetForm = (formEl: FormInstance | undefined) => {
           </el-button>
         </div>
         
-        <div class="login-info">
+        <div class="login-info" :class="{ 'dark-mode': isDark }">
           <p><strong>测试账户:</strong></p>
           <p>管理员: username: <code>admin</code> / password: <code>admin123</code></p>
           <p>普通用户: username: <code>user1</code> / password: <code>user123</code></p>
@@ -116,16 +124,27 @@ const resetForm = (formEl: FormInstance | undefined) => {
 </template>
 
 <style scoped>
+.dark-mode {
+  background-color: rgb(35, 39, 47) !important;
+  color: #e0e0e0 !important;
+}
 .login-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: calc(100vh - 200px);
+  min-height: 100vh ;
 }
 
 .login-card {
   width: 100%;
-  max-width: 400px;
+  max-width:400px;
+  background: #fff;
+  color: #303133;
+  transition: background 0.3s, color 0.3s;
+}
+.login-card.dark-mode {
+  background: #23272f !important;
+  color: #e0e0e0 !important;
 }
 
 .card-header {
@@ -136,11 +155,19 @@ const resetForm = (formEl: FormInstance | undefined) => {
   font-size: 1.8rem;
   color: #303133;
   margin-bottom: 8px;
+  transition: color 0.3s;
+}
+.card-header.dark-mode h1 {
+  color: #fff;
 }
 
 .card-header p {
   color: #606266;
   margin: 0;
+  transition: color 0.3s;
+}
+.card-header.dark-mode p {
+  color: #b0b0b0;
 }
 
 .form-actions {
@@ -155,17 +182,22 @@ const resetForm = (formEl: FormInstance | undefined) => {
   padding: 16px;
   background-color: #f5f7fa;
   border-radius: 4px;
+  color: #303133;
+  transition: background 0.3s, color 0.3s;
+}
+.login-info.dark-mode {
+  background-color: #23272f !important;
+  color: #e0e0e0 !important;
 }
 
-.login-info p {
-  margin: 8px 0;
-  font-size: 0.9rem;
-}
-
-code {
+.login-info code {
   background-color: #e6e6e6;
   padding: 2px 4px;
   border-radius: 3px;
   font-family: monospace;
+}
+.login-info.dark-mode code {
+  background-color: #333a4d;
+  color: #90caf9;
 }
 </style>

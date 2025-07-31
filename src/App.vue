@@ -7,12 +7,19 @@
 //   return !(currentRouteName && publicRoutes.includes(currentRouteName as string))
 // }
 import ThemeSwitcher from './components/ThemeSwitcher.vue';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
+import { useTheme } from './stores/theme';
+ const isDark = ref(false)
+onMounted(()=>{
+  const theme = useTheme(); 
+  isDark.value= computed(() => theme.isdark);
+})
+
 
 </script>
 
 <template>
-  <div>
+  <div >
     <el-config-provider>
       
      <router-view/>
@@ -30,6 +37,10 @@ import { ref } from 'vue';
   padding: 0;
   font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB',
     'Microsoft YaHei', Arial, sans-serif;
+}
+#app.dark-mode{
+  background-color: rgb(35, 39, 47) !important;
+  color: #e0e0e0 !important;
 }
 
 </style>

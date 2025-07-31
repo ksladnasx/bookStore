@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { useAuthStore } from '../../stores/auth'
 
 const route = useRoute()
 const router = useRouter()
-const authStore = useAuthStore()
 
 const isCollapse = ref(false)
 
@@ -13,10 +11,7 @@ const handleSelect = (key: string) => {
   router.push(key)
 }
 
-function logout() {
-  authStore.logout()
-  router.push('/')
-}
+
 </script>
 
 <template>
@@ -29,11 +24,11 @@ function logout() {
             <el-icon v-else>
               <Monitor />
             </el-icon>
-            <el-buttonlink @click="isCollapse = !isCollapse" class="collapse-btn">
+            <el-button link @click="isCollapse = !isCollapse" class="collapse-btn">
               <el-icon>
                 <component :is="isCollapse ? 'Expand' : 'Fold'" />
               </el-icon>
-            </el-buttonlink>
+            </el-button>
           </div>
 
           <el-menu :default-active="route.path" class="el-menu-vertical" :collapse="isCollapse" @select="handleSelect">
@@ -67,12 +62,12 @@ function logout() {
           </el-menu>
 
           <div class="sidebar-footer" :class="{ 'collapsed': isCollapse }">
-            <el-buttonlink @click="router.push('/')">
+            <el-button link @click="router.push('/')">
               <el-icon>
                 <HomeFilled />
               </el-icon>
               <span v-if="!isCollapse">Back to Site</span>
-            </el-buttonlink>
+            </el-button>
           </div>
         </el-aside>
       </div>
