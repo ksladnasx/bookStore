@@ -1,0 +1,34 @@
+{
+  "welcome": "欢迎来到 {name}",
+  "button": {
+    "submit": "提交",
+    "cancel": "取消"
+  },
+  "app": {
+    "title": "图书馆管理系统",
+    "description": "一个用于管理图书馆资源的系统"
+  },
+  "app.describtion": "欢迎来到图书馆",
+  "jie-shu": "借书",
+  "app.storefeature.title": "书店特色",
+  "app.storefeature.item.title": "广泛的收藏",
+  "app.storefeature.item.description": "访问各种流派和主题的数千本书。",
+  "app.storefeature.item2.title": "轻松借用",
+  "app.storefeature.item2.description": "只需单击几下借书并管理您的阅读列表。",
+  "app.storefeature.item3.title": "个人帐户",
+  "app.storefeature.item3.description": "跟踪您的借用历史记录并管理您的回报。",
+  "app.storefeature.item4.title": "快速搜索",
+  "app.storefeature.item4.description": "通过我们强大的搜索确切找到您想要的东西。",
+  "app.recent.title": "最近添加",
+  "app.recent.all": "全部",
+  "actions.changeLanguage": "修改语言",
+  "app.footer": "©图书库管理系统",
+  "layout1": "系统主页",
+  "layout2": "书籍汇总",
+  "layout3": "我的借阅",
+  "layout4": "管理面板",
+  "login": "登录",
+  "logout": "注销",
+  "app.mybook.title": "我的书",
+  "theme-switcher": "切换主题"
+}

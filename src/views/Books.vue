@@ -1,7 +1,13 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useBookStore } from '../stores/books'
 import BookCard from '../components/BookCard.vue'
+
+// 引入主题
+import { useTheme } from '../stores/theme';
+
+const theme = useTheme();
+const isDark = computed(() => theme.isdark);
 
 const bookStore = useBookStore()
 const loading = ref(true)
@@ -20,7 +26,7 @@ function resetFilters() {
 </script>
 
 <template>
-  <div class="books-container">
+  <div class="books-container" :class="{ 'dark-mode': isDark }">
     <div class="books-header">
       <h1>书籍汇总</h1>
       <p>借阅任何可以借阅的书籍</p>
@@ -102,8 +108,12 @@ function resetFilters() {
 <style scoped>
 .books-container {
   width: 100%;
+  transition: background 0.3s, color 0.3s;
 }
-
+.dark-mode {
+  background-color: #121212;
+  color: #e0e0e0;
+}
 .books-header {
   margin-bottom: 24px;
 }
@@ -112,11 +122,19 @@ function resetFilters() {
   font-size: 2rem;
   color: #303133;
   margin-bottom: 8px;
+  transition: color 0.3s;
+}
+.dark-mode .books-header h1 {
+  color: #fff;
 }
 
 .books-header p {
   color: #606266;
   font-size: 1.1rem;
+  transition: color 0.3s;
+}
+.dark-mode .books-header p {
+  color: #b0b0b0;
 }
 
 .filter-section {

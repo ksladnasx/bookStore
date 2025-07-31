@@ -1,0 +1,34 @@
+{
+  "welcome": "Welcome to {name}",
+  "button": {
+    "submit": "Submit",
+    "cancel": "Cancel"
+  },
+  "app": {
+    "title": "liberary management system",
+    "description": "a system for managing library resources"
+  },
+  "app.describtion": "welcom to library",
+  "jie-shu": "borrow",
+  "app.storefeature.title": "Feature",
+  "app.storefeature.item.title": "Extensive Collection",
+  "app.storefeature.item.description": "Access thousands of books across various genres and topics.",
+  "app.storefeature.item2.title": "Easy Borrowing",
+  "app.storefeature.item2.description": "Borrow books with just a few clicks and manage your reading list.",
+  "app.storefeature.item3.title": "Personal Account",
+  "app.storefeature.item3.description": "Track your borrowing history and manage your returns.",
+  "app.storefeature.item4.title": "Quick Search",
+  "app.storefeature.item4.description": "Find exactly what you're looking for with our powerful search.",
+  "app.recent.title": "RecentAdd",
+  "app.recent.all": "All",
+  "actions.changeLanguage": "exchange language",
+  "app.footer": "© {0} Library Management System",
+  "layout1": "Mainpage",
+  "layout2": "Books",
+  "layout3": "MyBorrow",
+  "layout4": "MangePanel",
+  "login": "login",
+  "logout": "logout",
+  "app.mybook.title": "My Books",
+  "theme-switcher": "switche theme"
+}

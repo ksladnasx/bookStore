@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 
@@ -40,6 +40,19 @@ function logout() {
   authStore.logout()
   router.push('/')
 }
+
+import { useI18n } from 'vue-i18n'
+const { locale } = useI18n()
+const toggleLanguage = () => {
+  locale.value = locale.value === 'zh' ? 'en' : 'zh'
+  localStorage.setItem('language', locale.value)
+}
+
+// 主题切换
+import ThemeSwitcher from './ThemeSwitcher.vue'
+import { useTheme } from '../stores/theme';
+
+const isDark = useTheme().isdark
 </script>
 
 <template>
@@ -50,43 +63,79 @@ function logout() {
     @select="handleSelect"
     router
   >
-    <el-menu-item index="1">系统主页</el-menu-item>
-    <el-menu-item index="2">书籍汇总</el-menu-item>
-    
+    <el-menu-item index="1">{{ $t('layout1') }}</el-menu-item>
+    <el-menu-item index="2">{{ $t('layout2') }}</el-menu-item>
     <template v-if="isAuthenticated">
-      <el-menu-item index="3">我的借阅</el-menu-item>
-      <el-menu-item v-if="isAdmin" index="4">管理面板</el-menu-item>
+      <el-menu-item index="3">{{ $t('layout3') }}</el-menu-item>
+      <el-menu-item v-if="isAdmin" index="4">{{ $t('layout4') }}</el-menu-item>
     </template>
-    
+
     <div class="flex-spacer"></div>
-    
-    <template v-if="isAuthenticated">
-      <el-sub-menu index="user">
-        <template #title>
-          <el-avatar size="small" :icon="'UserFilled'" />
-          <span class="username">{{ currentUser?.name }}</span>
-        </template> 
-        <el-menu-item index="logout">登出</el-menu-item>
-      </el-sub-menu>
-    </template>
-    
-    <template v-else>
-      <el-menu-item index="login">登录</el-menu-item>
-    </template>
+
+    <!-- 右侧操作区 -->
+     <div>
+      <ThemeSwitcher v-model:is-dark="isDark" />
+      </div>
+    <div class="navbar-actions">
+      
+      <el-menu-item @click="toggleLanguage">
+        <span>{{$t('actions.changeLanguage')}}：</span>
+        <el-button 
+        
+        class="language-btn"
+        :title="$t('actions.changeLanguage')"
+        circle
+        size="large"
+      >
+        {{ $i18n.locale === 'zh' ? '🇺🇸' : '🇨🇳' }}
+      </el-button>
+      </el-menu-item>
+      <template v-if="isAuthenticated">
+        <el-sub-menu index="user">
+          <template #title>
+            <el-avatar size="small" :icon="'UserFilled'" />
+            <span class="username">{{ currentUser?.name }}</span>
+          </template> 
+          <el-menu-item index="logout">{{ $t('logout') }}</el-menu-item>
+        </el-sub-menu>
+      </template>
+      <template v-else>
+        <el-menu-item index="login">{{ $t('login') }}</el-menu-item>
+      </template>
+    </div>
   </el-menu>
 </template>
 
 <style scoped>
+.el-menu-demo {
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  min-height: 56px;
+  background: #fff;
+  border-bottom: 1px solid #f0f0f0;
+}
+
 .flex-spacer {
   flex: 1;
+}
+
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+.language-btn {
+  border: none;
+  background: transparent;
+  font-size: 18px;
+  padding: 0 6px;
+  cursor: pointer;
 }
 
 .username {
   margin-left: 8px;
   font-size: 14px;
-}
-
-.el-menu-demo {
-  display: flex;
 }
 </style>

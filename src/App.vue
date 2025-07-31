@@ -6,15 +6,23 @@
 //   // 如果当前路由名称存在且在公共路由列表中，则不显示侧边栏
 //   return !(currentRouteName && publicRoutes.includes(currentRouteName as string))
 // }
+import ThemeSwitcher from './components/ThemeSwitcher.vue';
+import { ref } from 'vue';
+
 </script>
 
 <template>
-  <el-config-provider  >
-    <router-view/>
-  </el-config-provider>
+  <div>
+    <el-config-provider>
+      
+     <router-view/>
+   </el-config-provider>
+  </div>
+  
 </template>
 
 <style>
+
 #app {
   width: 100%;
   height: 100vh;
@@ -23,4 +31,5 @@
   font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB',
     'Microsoft YaHei', Arial, sans-serif;
 }
+
 </style>

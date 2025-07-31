@@ -49,7 +49,7 @@ function returnBook(bookId: number) {
 
 <template>
   <div class="my-books-container">
-    <h1>My Books</h1>
+    <h1>{{ $t('app.mybook.title') }}</h1>
     <p>Manage your borrowed books and view your borrowing history</p>
     
     <el-tabs>
