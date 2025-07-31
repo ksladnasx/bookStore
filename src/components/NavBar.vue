@@ -52,7 +52,8 @@ const toggleLanguage = () => {
 import ThemeSwitcher from './ThemeSwitcher.vue'
 import { useTheme } from '../stores/theme';
 
-const isDark = useTheme().isdark
+const theme = useTheme();
+const isDark = computed(() => theme.isdark);
 </script>
 
 <template>
@@ -62,8 +63,9 @@ const isDark = useTheme().isdark
     mode="horizontal"
     @select="handleSelect"
     router
+    :class="{ 'dark-mode': isDark }"
   >
-    <el-menu-item index="1">{{ $t('layout1') }}</el-menu-item>
+    <el-menu-item index="1" >{{ $t('layout1') }}</el-menu-item>
     <el-menu-item index="2">{{ $t('layout2') }}</el-menu-item>
     <template v-if="isAuthenticated">
       <el-menu-item index="3">{{ $t('layout3') }}</el-menu-item>

@@ -1,54 +1,61 @@
 <template>
   <div class="theme-switcher">
-    <span>{{ $t('theme-switcher') }}</span><!-- v-model="isDark" ，父组件传来的初始值为false -->
-    <el-switch
-      v-model="isDark" 
-      @change="toggleTheme"
-      inline-prompt
-      :active-icon="Moon"
-      :inactive-icon="Sunny"
+    <!-- <span>{{ $t('theme-switcher') }}:</span> -->
+    <!-- 通过 store 的 isdark 绑定 el-switch -->
+    <el-switch v-model="isdark" inline-prompt 
+    :active-icon="Moon" :inactive-icon="Sunny" 
+    :title="isdark?$t('theme-switcher2'):$t('theme-switcher')" />
+    <!-- 通过 store 的 themeColor 绑定 el-color-picker -->
+    <el-color-picker v-model="themeColor" 
+    :title="$t('color-picker')"
     />
-    
-    <el-color-picker v-model="themeColor" @change="updateTheme" />
   </div>
 </template>
 
 <script setup>
-import { Moon, Sunny } from '@element-plus/icons-vue';
-import { ref, watch } from 'vue';
-import { useStorage } from '@vueuse/core';
-import { useElementPlusTheme } from 'use-element-plus-theme';
-import { useTheme } from '../stores/theme';
-//状态管理，声明组件接收的 isDark 属性（布尔值），用于控制深色/浅色模式
-const props = defineProps(['isDark']); 
-// 定义自定义事件 update:isDark，实现父子组件的双向绑定（v-model:is-dark 语法支持
-const emit = defineEmits(['update:isDark']);
+import { Moon, Sunny } from '@element-plus/icons-vue'
+import { storeToRefs } from 'pinia'
+import { useElementPlusTheme } from 'use-element-plus-theme'
+import { useTheme } from '../stores/theme'
+import { onMounted, watch } from 'vue'
+// 获取主题 store
+const themeStore = useTheme()
+// 使用 storeToRefs 保证响应式
+const { isdark, themeColor } = storeToRefs(themeStore)
 
-const isDark = ref(props.isDark);
-const themeColor = useStorage('theme-color', '#409EFF');
-const { changeTheme } = useElementPlusTheme(themeColor.value);
+// 实例化主题切换方法
+const { changeTheme } = useElementPlusTheme(themeColor.value)
 
-const toggleTheme = () => {
-  // 是否开启暗夜模式，初值isDark.value是false，当切换框点击后改为true
-  document.documentElement.classList.toggle('dark', isDark.value);
-  useTheme().isdark = isDark.value; // 更新状态管理中的 isDark
-  console.log('切换主题', useTheme().isdark);
-  emit('update:isDark', isDark.value);
-};
 
-const updateTheme = (color) => {
-  changeTheme(color);
-};
+if (isdark.value) {
+    document.documentElement.classList.add('dark')
+  } else {
+    document.documentElement.classList.remove('dark')
+  }
 
-watch(isDark, (val) => {
-  document.documentElement.classList.toggle('dark', val);
 
-});
+// 切换主题色
+watch(themeColor, (newColor) => {
+  changeTheme(newColor)
+  themeStore.updateThemeColor(newColor)
+})
+
+// 监听 isdark 的变化，切换暗黑模式
+watch(isdark, (newValue) => {
+  if (newValue) {
+    document.documentElement.classList.add('dark')
+  } else {
+    document.documentElement.classList.remove('dark')
+  }
+})
+
+
 </script>
 
 <style scoped>
-.theme-switcher{
-  display: flex ;
+.theme-switcher {
+  display: flex;
   align-items: center;
+  gap: 12px;
 }
 </style>

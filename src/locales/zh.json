@@ -30,5 +30,7 @@
   "login": "登录",
   "logout": "注销",
   "app.mybook.title": "我的书",
-  "theme-switcher": "切换主题"
+  "theme-switcher": "暗色模式",
+  "color-picker": "修改主题色",
+  "theme-switcher2": "亮色模式"
 }

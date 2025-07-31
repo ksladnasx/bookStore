@@ -29,11 +29,11 @@ function logout() {
             <el-icon v-else>
               <Monitor />
             </el-icon>
-            <el-button type="text" @click="isCollapse = !isCollapse" class="collapse-btn">
+            <el-buttonlink @click="isCollapse = !isCollapse" class="collapse-btn">
               <el-icon>
                 <component :is="isCollapse ? 'Expand' : 'Fold'" />
               </el-icon>
-            </el-button>
+            </el-buttonlink>
           </div>
 
           <el-menu :default-active="route.path" class="el-menu-vertical" :collapse="isCollapse" @select="handleSelect">
@@ -67,12 +67,12 @@ function logout() {
           </el-menu>
 
           <div class="sidebar-footer" :class="{ 'collapsed': isCollapse }">
-            <el-button type="text" @click="router.push('/')">
+            <el-buttonlink @click="router.push('/')">
               <el-icon>
                 <HomeFilled />
               </el-icon>
               <span v-if="!isCollapse">Back to Site</span>
-            </el-button>
+            </el-buttonlink>
           </div>
         </el-aside>
       </div>

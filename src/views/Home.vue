@@ -55,7 +55,7 @@ const isDark = computed(() => theme.isdark);
     <div class="recent-books">
       <div class="section-header">
         <h2>{{ $t('app.recent.title') }}</h2>
-        <el-button type="text" @click="router.push('/books')">
+        <el-button link @click="router.push('/books')">
          {{ $t('app.recent.all') }} <el-icon><ArrowRight /></el-icon>
         </el-button>
       </div>
@@ -76,11 +76,10 @@ const isDark = computed(() => theme.isdark);
 
 /* 黑暗模式下整体背景和字体色 */
 .home-container.dark-mode {
-  background-color: #181818;
+  background-color: rgb(18, 18, 18);
   color: #e0e0e0;
 }
 
-/* 英雄区 */
 .hero-section {
   text-align: center;
   padding: 48px 16px;
@@ -128,30 +127,61 @@ const isDark = computed(() => theme.isdark);
 .home-container.dark-mode .features-section h2 {
   color: #fff;
 }
+
+/* 让四个子项居中显示 */
 .features-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
   gap: 24px;
+  flex-wrap: wrap;
 }
+
 .feature-item {
+  flex: 0 1 280px;
+  max-width: 320px;
+  min-width: 220px;
   padding: 24px;
   text-align: center;
   background-color: #fff;
-  border-radius: 8px;
+  border-radius: 16px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-  transition: background 0.3s, color 0.3s, box-shadow 0.3s;
+  transition: 
+    background 0.3s, 
+    color 0.3s, 
+    box-shadow 0.3s, 
+    transform 0.3s,
+    opacity 0.4s;
+  opacity: 0;
+  transform: translateY(40px) scale(0.96);
+  animation: fadeInUp 0.7s cubic-bezier(.23,1.01,.32,1) forwards;
 }
+.features-grid .feature-item:nth-child(1) { animation-delay: 0.05s; }
+.features-grid .feature-item:nth-child(2) { animation-delay: 0.15s; }
+.features-grid .feature-item:nth-child(3) { animation-delay: 0.25s; }
+.features-grid .feature-item:nth-child(4) { animation-delay: 0.35s; }
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.feature-item:hover {
+  transform: translateY(-8px) scale(1.03);
+  box-shadow: 0 8px 24px 0 rgba(64,158,255,0.18);
+  background: linear-gradient(135deg, #e3f0ff 0%, #f8fbff 100%);
+}
+
 .home-container.dark-mode .feature-item {
-  background-color: #23272f;
+  background-color: #223355;
   color: #e0e0e0;
   box-shadow: 0 2px 12px 0 rgba(0,0,0,0.4);
 }
-.feature-item:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.15);
-}
 .home-container.dark-mode .feature-item:hover {
-  box-shadow: 0 4px 16px 0 rgba(0,0,0,0.6);
+  background: linear-gradient(135deg, #223355 60%, #1a2333 100%);
+  box-shadow: 0 8px 24px 0 rgba(64,158,255,0.08);
 }
 .feature-item .el-icon {
   font-size: 32px;
@@ -210,6 +240,15 @@ const isDark = computed(() => theme.isdark);
 }
 
 /* 响应式 */
+@media (max-width: 1024px) {
+  .features-grid {
+    gap: 16px;
+  }
+  .feature-item {
+    flex: 0 1 45%;
+    min-width: 180px;
+  }
+}
 @media (max-width: 768px) {
   .hero-section h1 {
     font-size: 2rem;
@@ -218,7 +257,13 @@ const isDark = computed(() => theme.isdark);
     font-size: 1rem;
   }
   .features-grid {
-    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: center;
+  }
+  .feature-item {
+    width: 90%;
+    min-width: 140px;
+    margin-bottom: 16px;
   }
   .book-grid {
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));

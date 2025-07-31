@@ -30,5 +30,7 @@
   "login": "login",
   "logout": "logout",
   "app.mybook.title": "My Books",
-  "theme-switcher": "switche theme"
+  "theme-switcher": "switch theme",
+  "color-picker": "exchange color",
+  "theme-switcher2": "light mode"
 }
