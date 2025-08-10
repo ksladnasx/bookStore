@@ -97,6 +97,7 @@ const isDark = computed(() => theme.isdark);
   margin-bottom: 16px;
   transition: color 0.3s;
 }
+/* 当某个元素同时拥有 home-container 和 dark-mode 这两个类时，应用该选择器下定义的样式。 */
 .home-container.dark-mode .hero-section h1 {
   color: #fff;
 }

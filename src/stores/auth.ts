@@ -29,6 +29,7 @@ export const useAuthStore = defineStore('auth', () => {
       const user = users.find(
         u => u.username === credentials.username && u.password === credentials.password
       )
+      
 
       if (user) {
         // Don't include password in the stored user object

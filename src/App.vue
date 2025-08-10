@@ -1,4 +1,4 @@
-<script>
+<script >
 // const shouldShowSidebar = () => {
 //   const currentRouteName = router.currentRoute.value.name
 //   const publicRoutes = ['homepage'] // 这里为实际的路由的组件名称（“name:”部分）
@@ -7,14 +7,13 @@
 //   return !(currentRouteName && publicRoutes.includes(currentRouteName as string))
 // }
 import ThemeSwitcher from './components/ThemeSwitcher.vue';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref ,watch} from 'vue';
 import { useTheme } from './stores/theme';
  const isDark = ref(false)
 onMounted(()=>{
   const theme = useTheme(); 
   isDark.value= computed(() => theme.isdark);
 })
-
 
 </script>
 

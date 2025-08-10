@@ -10,12 +10,13 @@ import { i18n } from './i18n'
 import vant from 'vant';
 import 'element-plus/dist/index.css'; // 核心样式
 import 'element-plus/theme-chalk/dark/css-vars.css'; // 深色主题支持 [8,9](@ref)
-
+import axios from 'axios'
 
 const app = createApp(App)
 
 app.use(createPinia())
 app.use(router)
+app.use(axios)
 app.use(ElementPlus)
 app.use(vant);
 // 全局注册所有图标
@@ -24,3 +25,4 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 }
 app.use(i18n);
 app.mount('#app')
+
