@@ -136,11 +136,9 @@ const isDark = computed(() => theme.isdark);
   align-items: stretch;
   gap: 24px;
   flex-wrap: wrap;
-  
 }
 
 .feature-item {
-  cursor: pointer;
   flex: 0 1 280px;
   max-width: 320px;
   min-width: 220px;
@@ -272,9 +270,5 @@ const isDark = computed(() => theme.isdark);
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 16px;
   }
-}
-* {
- 
-  user-select: none;          /* 标准语法 */
 }
 </style>

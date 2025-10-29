@@ -5,6 +5,7 @@ import type { FormInstance, FormRules } from 'element-plus'
 import { Edit } from '@element-plus/icons-vue'
 import { useI18n } from 'vue-i18n'
 import { useTheme } from '../stores/theme'
+import users from '../mockData/users'
 
 const router = useRouter()
 const { t } = useI18n()

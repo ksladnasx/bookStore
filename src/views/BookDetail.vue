@@ -97,7 +97,6 @@ function confirmDelete() {
           <div class="book-image-skeleton">
             <el-skeleton-item variant="image" style="width: 100%; height: 100%" />
           </div>
-          
           <div class="book-info-skeleton" >
             <el-skeleton-item variant="h3" style="width: 50%" />
             <el-skeleton-item variant="text" style="margin-top: 16px; width: 30%" />
@@ -185,7 +184,6 @@ function confirmDelete() {
         </div>
       </template>
     </el-skeleton>
-    <el-button @click="() => { router.back() }" style="display: flex;" size="large">{{ $t('actions.back') }}</el-button>
   </div>
 </template>
 
@@ -204,9 +202,6 @@ function confirmDelete() {
 
 .book-image-container {
   flex: 0 0 300px;
-  cursor: pointer;
-  user-select: none;          /* 标准语法 */
-
 }
 
 .book-image {
