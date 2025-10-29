@@ -27,6 +27,9 @@ function handleSelect(key: string) {
     case '4':
       router.push('/admin')
       break
+    case '6':
+      router.push('/tests')
+      break
     case 'logout':
       logout()
       break
@@ -57,51 +60,39 @@ const isDark = computed(() => theme.isdark);
 </script>
 
 <template>
-  <el-menu
-    :default-active="authStore.activeIndex"
-    class="el-menu-demo"
-    mode="horizontal"
-    @select="handleSelect"
-    router
-    :class="{ 'dark-mode': isDark }"
-  >
-    <el-menu-item index="1" >{{ $t('layout1') }}</el-menu-item>
+  <el-menu :default-active="authStore.activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect" router
+    :class="{ 'dark-mode': isDark }">
+    <el-menu-item index="1">{{ $t('layout1') }}</el-menu-item>
     <el-menu-item index="2">{{ $t('layout2') }}</el-menu-item>
     <template v-if="isAuthenticated">
       <el-menu-item index="3">{{ $t('layout3') }}</el-menu-item>
-      <el-menu-item v-if="isAdmin" index="4">{{ $t('layout4') }}</el-menu-item>
+      <el-menu-item index="6">Tests</el-menu-item>
+      <!-- <el-menu-item v-if="isAdmin" index="4">{{ $t('layout4') }}</el-menu-item> -->
     </template>
-     <div>
+    <div>
       <ThemeSwitcher v-model:is-dark="isDark" />
-      </div>
+    </div>
     <div class="flex-spacer"></div>
 
     <!-- 右侧操作区 -->
-    
+
     <div class="navbar-actions">
-      
+
       <el-menu-item @click="toggleLanguage">
-        <span>{{$t('actions.changeLanguage')}}：</span>
-        <el-button 
-        
-        class="language-btn"
-        :title="$t('actions.changeLanguage')"
-        circle
-        size="large"
-      >
-        {{ $i18n.locale === 'zh' ? '🇺🇸' : '🇨🇳' }}
-      </el-button>
+        <span>{{ $t('actions.changeLanguage') }}：</span>
+        <el-button class="language-btn" :title="$t('actions.changeLanguage')" circle size="large">
+          {{ $i18n.locale === 'zh' ? '🇺🇸' : '🇨🇳' }}
+        </el-button>
       </el-menu-item>
       <template v-if="isAuthenticated">
         <el-sub-menu index="user">
           <template #title>
-             <div>
-      <el-avatar
-        src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" 
-      />
-    </div>
+            <div>
+              <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" />
+            </div>
             <span class="username">{{ currentUser?.name }}</span>
-          </template> 
+          </template>
+          <el-menu-item v-if="isAdmin" index="4">{{ $t('layout4') }}</el-menu-item> 
           <el-menu-item index="logout">{{ $t('logout') }}</el-menu-item>
         </el-sub-menu>
       </template>
@@ -126,12 +117,19 @@ const isDark = computed(() => theme.isdark);
   flex: 1;
 }
 
+* {
+  /* 禁用鼠标选中 */
+  user-select: none;
+  /* 标准语法 */
+}
+
 .navbar-actions {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
 }
+
 .language-btn {
   border: none;
   background: transparent;

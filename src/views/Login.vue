@@ -160,9 +160,9 @@ const resetForm = (formEl: FormInstance | undefined) => {
 
 .form-actions {
   display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-top: 24px;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 28px;
 }
 
 .tips {
