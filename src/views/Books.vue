@@ -122,7 +122,7 @@ function resetFilters() {
   font-size: 2rem;
   color: #303133;
   margin-bottom: 8px;
-  transition: color 0.3s;
+  transition: color 0.28s;
 }
 .dark-mode .books-header h1 {
   color: #fff;
