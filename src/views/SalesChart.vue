@@ -2,7 +2,7 @@
    <div class="chart-container">
         <h2>销售数据统计</h2>
         <div ref="chartRef" class="chart"></div>
-    </div>
+    </div> 
 </template>
 
 <script setup lang='ts'>
@@ -86,7 +86,11 @@ const getOption = (): EChartsOption => ({
 });
 
 const initChart = () => {
-    if (!chartRef.value) return;
+    // 添加判断，确保 chartRef 及其 value 存在
+    if (!chartRef.value) {
+        console.error('图表容器引用不存在！');
+        return; // 如果容器不存在，直接返回，不执行后续操作
+    }
 
     myChart = echarts.init(chartRef.value);
     myChart.setOption(getOption());

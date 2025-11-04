@@ -1,7 +1,7 @@
 <template>
   <el-watermark :font="font" :content="['Han Wang', 'Test Area']">
     <!-- <BarChart :chart-data="salesData" /> -->
-    <ZheX :chart-data="salesData" />
+    <SalesChart :chart-data="salesData" />
   </el-watermark>
   
   <div class="update-btn">
@@ -12,7 +12,7 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
 // import BarChart from './BarChart.vue';
-import ZheX from './ZheX.vue';
+import SalesChart from './ZheX.vue';
 
 const font = reactive({
   color: 'rgba(0, 0, 0, .15)',

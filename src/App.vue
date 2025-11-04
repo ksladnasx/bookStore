@@ -9,6 +9,9 @@
 import ThemeSwitcher from './components/ThemeSwitcher.vue';
 import { onMounted, ref ,watch} from 'vue';
 import { useTheme } from './stores/theme';
+import {sum} from './utils/sum';
+
+sum(1,2); // just for test
  const isDark = ref(false)
 onMounted(()=>{
   const theme = useTheme(); 
