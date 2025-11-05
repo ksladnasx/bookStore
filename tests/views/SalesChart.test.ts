@@ -64,10 +64,10 @@ describe("SalesChart.vue - 基础测试", () => {
     expect(wrapper.find(".chart").exists()).toBe(true);
   });
 
-  it("使用默认数据时应该初始化图表并设置初始 option", async () => {
+  it("使用默认数据时应初始化图表并设置初始 option", async () => {
     const echarts = await import("echarts");
 
-    // echarts.init 应被调用一次以创建图表实例
+    // echarts.init 应被调用一次以创建图表实例 
     expect(echarts.init).toHaveBeenCalledTimes(1);
 
     // 初始化时组件会调用一次 setOption 设置初始配置
@@ -99,4 +99,4 @@ describe("SalesChart.vue - 基础测试", () => {
   it("",()=>{
     mockChartInstance.setOption.mockClear()
   })
-});
+}); 

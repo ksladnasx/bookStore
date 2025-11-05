@@ -72,17 +72,7 @@ const deviceList = ref([
 // 模拟获取设备列表的API
 const fetchDeviceList = async () => {
   // 模拟API调用延迟
-  return new Promise(resolve => {
-    setTimeout(() => {
-      // 在实际项目中，这里应该是真实的API调用
-      // const response = await api.get('/api/devices')
-      // deviceList.value = response.data
-      
-      // 这里我们使用假数据
-      console.log('获取设备列表成功')
-      resolve()
-    }, 500)
-  })
+  console.log('获取设备列表')
 }
 
 // 模拟删除设备的API
@@ -95,7 +85,7 @@ const deleteDevice = async (deviceId) => {
       
       console.log(`删除设备 ${deviceId} 成功`)
       resolve()
-    }, 500)
+    }, 50)
   })
 }
 

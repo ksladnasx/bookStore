@@ -4,7 +4,7 @@ import { sum,multiply ,divide,subtract} from '../../src/utils/sum';
 
 describe('数学工具函数', () => {
   describe('sum 函数', () => {
-    it('应该能正确计算两个数字的和', () => {
+    it('应该能正确计算两个数字和', () => {
       // 准备数据 (Arrange)
       const a = 1;
       const b = 3;
