@@ -1,13 +1,21 @@
-// MyDevicesPage.spec.js
-import { mount, flushPromises } from '@vue/test-utils'
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+// MyDevicesPage.spec.ts
+import { mount, flushPromises, type VueWrapper } from '@vue/test-utils'
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import MyDevicesPage from '../../src/views/Tests1.vue' // 请根据实际路径调整
 
+// 定义设备接口
+interface Device {
+  id: number
+  name: string
+  uuid: string
+  lastLoginTime: string
+  bindTime: string
+}
 
 // 修正element-plus模拟
 vi.mock('element-plus', async () => {
-  const actual = await vi.importActual('element-plus')
+  const actual = await vi.importActual<typeof import('element-plus')>('element-plus')
   return {
     ...actual,
     ElMessage: {
@@ -16,30 +24,13 @@ vi.mock('element-plus', async () => {
       info: vi.fn()
     },
     ElMessageBox: {
-      confirm: vi.fn()
+      confirm: vi.fn() as Mock
     }
   }
 })
 
 describe('MyDevicesPage 组件', () => {
-  let wrapper
-
-  const mockDevices = [
-    {
-      id: 1,
-      name: '设备一',
-      uuid: 'E74CB252D9F8601A13B267CFEF29837E',
-      lastLoginTime: '2025-12-12 12:12:12',
-      bindTime: '2025-12-12 12:12:12'
-    },
-    {
-      id: 2,
-      name: '设备二',
-      uuid: 'E74CB252D9F8601A13B267CFEF29837E',
-      lastLoginTime: '2025-12-12 12:12:12',
-      bindTime: '2025-12-12 12:12:12'
-    }
-  ]
+  let wrapper: VueWrapper<any>
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -47,23 +38,23 @@ describe('MyDevicesPage 组件', () => {
   })
 
   it('组件挂载时应该获取并显示设备列表', async () => {
-  // 等待组件挂载和异步操作完成
-  await wrapper.vm.$nextTick()
-  await new Promise(resolve => setTimeout(resolve, 60))
-  
-  // 验证设备列表是否正确渲染
-  const deviceCards = wrapper.findAll('.device-card')
-  expect(deviceCards).toHaveLength(2) // 应该显示2个设备
-  
-  // 验证设备数据是否正确显示
-  const firstDeviceName = wrapper.find('.device-name').text()
-  expect(firstDeviceName).toBe('设备一')
-})
+    // 等待组件挂载和异步操作完成
+    await wrapper.vm.$nextTick()
+    await new Promise(resolve => setTimeout(resolve, 60))
+    
+    // 验证设备列表是否正确渲染
+    const deviceCards = wrapper.findAll('.device-card')
+    expect(deviceCards).toHaveLength(2) // 应该显示2个设备
+    
+    // 验证设备数据是否正确显示
+    const firstDeviceName = wrapper.find('.device-name').text()
+    expect(firstDeviceName).toBe('设备一')
+  })
 
   describe('删除设备功能', () => {
     it('当用户确认删除时，应该调用删除API并更新设备列表', async () => {
       // 模拟用户确认
-      ElMessageBox.confirm.mockResolvedValueOnce()
+      ;(ElMessageBox.confirm as Mock).mockResolvedValueOnce(undefined)
 
       const initialDeviceCount = wrapper.vm.deviceList.length
       const deleteButton = wrapper.findAll('.delete-btn')[0]
@@ -79,12 +70,12 @@ describe('MyDevicesPage 组件', () => {
       
       // 检查设备列表是否更新
       expect(wrapper.vm.deviceList).toHaveLength(initialDeviceCount - 1)
-      expect(wrapper.vm.deviceList.find(d => d.id === 1)).toBeUndefined()
+      expect(wrapper.vm.deviceList.find((d: Device) => d.id === 1)).toBeUndefined()
       expect(ElMessage.success).toHaveBeenCalledWith('设备删除成功')
     })
 
     it('当用户取消删除时，应该显示提示信息', async () => {
-      ElMessageBox.confirm.mockRejectedValueOnce()
+      ;(ElMessageBox.confirm as Mock).mockRejectedValueOnce(undefined)
 
       const deleteButton = wrapper.findAll('.delete-btn')[0]
       await deleteButton.trigger('click')
@@ -94,5 +85,9 @@ describe('MyDevicesPage 组件', () => {
       
       expect(ElMessage.info).toHaveBeenCalledWith('已取消删除')
     })
+  })
+
+  describe.todo("取消删除功能",()=>{
+
   })
 })

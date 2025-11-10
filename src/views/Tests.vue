@@ -1,20 +1,17 @@
 <template>
-  <el-watermark :font="font" :content="['Han Wang', 'Test Area']">
-    <!-- <BarChart :chart-data="salesData" /> -->
-    <!-- <SalesChart :chart-data="salesData" /> -->
-    <Tests1 />
-  </el-watermark>
   
-  <div class="update-btn">
+  <index />
+  <!-- <div class="update-btn">
     <button @click="updateData">更新数据</button>
-  </div>
+  </div> -->
 </template>
 
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
 // import BarChart from './BarChart.vue';
 // import SalesChart from './SalesChart.vue';
-import Tests1 from './Tests1.vue';
+// import Tests1 from './Tests1.vue';
+import index from "./minitor/index.vue"
 
 const font = reactive({
   color: 'rgba(0, 0, 0, .15)',
