@@ -54,7 +54,7 @@
               <td class="strategy-col">
                 <div class="config-item">
                   <span class="item-label">后端协议</span>
-                  <span class="item-value">{{ strategyConfig.backendProtocol || 'TCP' }}</span>
+                  <span class="item-value">{{ getAccessControlName(strategyConfig.backendProtocol) || 'TCP' }}</span>
                 </div>
                 <div class="config-item">
                   <span class="item-label">获取客户端真实源IP</span>
@@ -228,7 +228,7 @@ const getHealthProtocolName = (protocol) => {
   margin-left: 20px;
   margin-right: 20px;
   max-width: 100%;
-  overflow: hidden;
+  /* overflow: hidden; */
   background-color: #ffffff;
 }
 
@@ -288,9 +288,9 @@ const getHealthProtocolName = (protocol) => {
   font-weight: 500;
   color: #606266;
   /* margin-right: 8px; */
-  white-space: nowrap;
+  /* white-space: nowrap; */
   flex-shrink: 0;
-  width: 140px;
+  width: 120px;
   font-size: 16px;
 }
 

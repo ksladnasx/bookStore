@@ -11,8 +11,8 @@
         <div class="form-item">
           <span class="form-label">是否开启</span>
           <div class="form-control">
-            <el-switch 
-              v-model="form.enabled" 
+            <el-switch
+              v-model="form.enabled"
               :active-value="true"
               :inactive-value="false"
             />
@@ -23,10 +23,11 @@
         <div class="form-item">
           <span class="form-label">健康检查协议</span>
           <div class="form-control">
-            <el-select 
-              v-model="form.protocol" 
+            <el-select
+              v-model="form.protocol"
               placeholder="请选择"
               class="protocol-select"
+              disabled
             >
               <el-option label="TCP" value="tcp" />
               <el-option label="HTTP" value="http" />
@@ -39,10 +40,10 @@
         <div class="form-item">
           <span class="form-label">检查间隔（秒）</span>
           <div class="form-control">
-            <el-input-number 
-              v-model="form.interval" 
-              :min="1" 
-              :max="20940" 
+            <el-input-number
+              v-model="form.interval"
+              :min="1"
+              :max="20940"
               :step="1"
               controls-position="right"
               class="interval-input"
@@ -55,10 +56,10 @@
         <div class="form-item">
           <span class="form-label">超时时间（秒）</span>
           <div class="form-control">
-            <el-input-number 
-              v-model="form.timeout" 
-              :min="2" 
-              :max="60" 
+            <el-input-number
+              v-model="form.timeout"
+              :min="2"
+              :max="60"
               :step="1"
               controls-position="right"
               class="timeout-input"
@@ -71,10 +72,10 @@
         <div class="form-item">
           <span class="form-label">最大重试次数</span>
           <div class="form-control">
-            <el-input-number 
-              v-model="form.maxRetries" 
-              :min="1" 
-              :max="10" 
+            <el-input-number
+              v-model="form.maxRetries"
+              :min="1"
+              :max="10"
               :step="1"
               controls-position="right"
               class="retries-input"
@@ -228,13 +229,13 @@ onMounted(() => {
     flex-direction: column;
     align-items: flex-start;
   }
-  
+
   .form-label {
     width: 100%;
     margin-bottom: 8px;
     padding-right: 0;
   }
-  
+
   .form-control {
     width: 100%;
   }

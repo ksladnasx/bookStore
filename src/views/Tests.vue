@@ -7,23 +7,23 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
+// import { reactive, ref } from 'vue';
 // import BarChart from './BarChart.vue';
 // import SalesChart from './SalesChart.vue';
 // import Tests1 from './Tests1.vue';
-import index from "./minitor/index.vue"
+// import index from "./minitor/index.vue"
+import index from "../views/AddBackendServerGroup/AddBackendServerGroup.vue"
 
-const font = reactive({
-  color: 'rgba(0, 0, 0, .15)',
-})
-const salesData = ref([15, 24, 18, 32, 21, 28]);
+// const font = reactive({
+  // color: 'rgba(0, 0, 0, .15)',
+// })
+// const salesData = ref([15, 24, 18, 32, 21, 28]);
 
-const updateData = () => {
-  salesData.value = salesData.value.map(() =>
-    Math.floor(Math.random() * 40) + 5
-  );
-};
-
+// const updateData = () => {
+//   salesData.value = salesData.value.map(() =>
+//     Math.floor(Math.random() * 40) + 5
+//   );
+// };
 
 
 

@@ -4,30 +4,24 @@
       <!-- 后端服务器组名称 -->
       <div class="form-item">
         <span class="form-label">后端服务器组名称</span>
-        <el-input 
-          v-model="serverGroupName" 
-          placeholder="" 
-          disabled
-          class="input-field"
-        />
+        <el-input v-model="serverGroupName" placeholder="" disabled class="input-field" />
       </div>
 
       <!-- 后端协议 -->
       <div class="form-item">
         <span class="form-label">后端协议</span>
-        <el-input 
-          v-model="form.backendProtocol" 
-          placeholder="" 
-          disabled
-          class="input-field"
-        />
+        <el-input
+         v-model="prots"
+         placeholder=""
+         disabled
+         class="input-field" />
       </div>
 
       <!-- 获取客户端真实源IP -->
       <div class="form-item">
         <span class="form-label">获取客户端真实源IP</span>
         <div class="form-control">
-          <el-switch v-model="form.getClientIP" :disabled="!form.acknowledgeRisk"/>
+          <el-switch v-model="form.getClientIP" :disabled="!form.acknowledgeRisk" />
           <div class="warning-text">
             注意：该功能不支持平滑开启，切换到ProxyProtocol需要业务停服升级，请谨慎配置。
           </div>
@@ -49,17 +43,9 @@
       <div class="form-item">
         <span class="form-label required">分配策略类型</span>
         <div class="form-control">
-          <el-select 
-            v-model="form.algorithm" 
-            placeholder="请选择" 
-            class="algorithm-select"
-          >
-            <el-option 
-              v-for="algorithm in algorithms" 
-              :key="algorithm.value" 
-              :label="algorithm.label" 
-              :value="algorithm.value"
-            />
+          <el-select v-model="form.algorithm" placeholder="请选择" class="algorithm-select">
+            <el-option v-for="algorithm in algorithms" :key="algorithm.value" :label="algorithm.label"
+              :value="algorithm.value" />
           </el-select>
         </div>
       </div>
@@ -67,15 +53,8 @@
       <!-- 描述 -->
       <div class="form-item">
         <span class="form-label">描述</span>
-        <el-input
-          v-model="form.description"
-          type="textarea"
-          :rows="3"
-          placeholder="请输入描述信息"
-          class="description-input"
-          maxlength="200"
-          show-word-limit
-        />
+        <el-input v-model="form.description" type="textarea" :rows="3" placeholder="请输入描述信息" class="description-input"
+          maxlength="200" show-word-limit />
       </div>
     </div>
   </div>
@@ -92,12 +71,25 @@ const props = defineProps({
   serverGroupName: {
     type: String,
     default: ''
+  },
+  protocol: {
+    type: String,
+    default: ''
   }
 })
+const formProtocolName = (protocol) => {
+  const protocols = {
+    'http': 'HTTP',
+    'https': 'HTTPS',
+    'tcp': 'TCP'
+  }
+  return protocols[protocol] || 'undefined'
+}
 
 // 服务器组名称（从父组件传入）
 const serverGroupName = computed(() => props.serverGroupName)
-
+const prot = computed(() => props.protocol)
+const prots = formProtocolName(prot.value)
 // 分配策略选项
 const algorithms = ref([
   { label: '轮询算法', value: 'roundRobin' },
@@ -125,7 +117,7 @@ onMounted(() => {
     props.form.description = ''
   }
   if (!props.form.hasOwnProperty('backendProtocol')) {
-    props.form.backendProtocol = 'TCP'
+    props.form.backendProtocol = ''
   }
 })
 </script>

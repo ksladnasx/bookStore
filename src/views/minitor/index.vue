@@ -32,12 +32,14 @@
           v-if="currentStep === 2"
           v-model:form="strategyForm"
           :server-group-name="serverGroupName"
+          :protocol="listenerForm.protocol"
         />
 
         <!-- 步骤4: 启用健康检查 -->
         <HealthCheckConfig
           v-if="currentStep === 3"
           v-model:form="healthCheckForm"
+          :listener-protocol="listenerForm.protocol"
         />
 
         <!-- 步骤5: 配置确认 -->
@@ -76,6 +78,7 @@ import ServerGroupConfig from './ServerGroupConfig.vue'
 import StrategyConfig from './StrategyConfig.vue'
 import HealthCheckConfig from './HealthCheckConfig.vue'
 import ConfigConfirm from './ConfigConfirm.vue'
+import {fetchElbBackend} from '@/apis/ctyun/index'
 
 // 当前步骤
 const currentStep = ref(0)
@@ -97,7 +100,7 @@ const serverGroupName = ref('')
 // 步骤3表单数据
 const strategyForm = reactive({
   groupName: '',
-  backendProtocol: 'TCP',
+  backendProtocol: '',
   getClientIP: false,
   acknowledgeRisk: false,
   sessionPersistence: false,
@@ -108,7 +111,7 @@ const strategyForm = reactive({
 // 步骤4表单数据
 const healthCheckForm = reactive({
   enabled: true,
-  protocol: 'tcp',
+  protocol: '',
   interval: 5,
   timeout: 2,
   maxRetries: 2
@@ -122,7 +125,21 @@ const nextStep = () => {
   }
 
   if (currentStep.value < 4) {
+
+     if (currentStep.value === 1) {
+      strategyForm.backendProtocol = listenerForm.protocol
+    }
+    // 在进入步骤4（健康检查）时，同步健康检查协议
+    if (currentStep.value === 2) {
+      healthCheckForm.protocol = listenerForm.protocol
+    }
     currentStep.value++
+    fetchElbBackend(1,"yx").then(({data})=>{
+      console.log('获取后端组数据:',data)
+      const res = data[1]
+      console.log(res)
+    })
+
    // console.log('切换到步骤:', currentStep.value)
   }
 }
@@ -171,13 +188,15 @@ const submitConfig = async () => {
 
 const cancelConfig = async () => {
   try {
-    await ElMessageBox.confirm(
+     ElMessageBox.confirm(
       '确定要取消配置吗？所有未保存的更改将丢失。',
       '确认取消',
       {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning'
+        type: 'warning',
+        // 添加自定义类名用于样式控制
+        customClass: 'cancel-confirm-dialog'
       }
     )
 

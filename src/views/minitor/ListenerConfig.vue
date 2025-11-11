@@ -27,7 +27,7 @@
         </el-form-item>
       </el-form>
     </div>
-    
+
     <!-- 高级配置部分 -->
     <div class="form-section">
       <div class="section-header">
@@ -41,7 +41,7 @@
         <div class="redirect-tip">
           HTTP协议方可开启重定向，每个监听器只能重定向一次。
         </div>
-        
+
         <!-- 访问控制 -->
         <el-form-item label="访问控制">
           <el-radio-group v-model="form.accessControl">
@@ -50,30 +50,30 @@
             <el-radio label="blacklist">黑名单</el-radio>
           </el-radio-group>
         </el-form-item>
-        
+
         <!-- IP地址组选择行 - 只在选择白名单或黑名单时显示 -->
-        <el-form-item 
-          v-if="showIPAddressGroup" 
+        <el-form-item
+          v-if="showIPAddressGroup"
           label="IP地址组"
           class="ip-address-group-item"
         >
           <div class="ip-group-selector">
-            <el-select 
-              v-model="form.selectedIPGroup" 
+            <el-select
+              v-model="form.selectedIPGroup"
               placeholder="请选择IP地址组"
               style="width: 300px;"
             >
-              <el-option 
-                v-for="group in ipAddressGroups" 
-                :key="group.id" 
-                :label="group.name" 
-                :value="group.id" 
+              <el-option
+                v-for="group in ipAddressGroups"
+                :key="group.id"
+                :label="group.name"
+                :value="group.id"
               />
             </el-select>
-            <el-link 
-              type="primary" 
-              :underline="false" 
-              href="#" 
+            <el-link
+              type="primary"
+              :underline="false"
+              href="#"
               class="view-ip-link"
               @click.prevent="handleViewIPGroup"
             >
@@ -104,10 +104,7 @@ const showIPAddressGroup = computed(() => {
 
 // IP地址组数据
 const ipAddressGroups = ref([
-  { id: 1, name: '内部服务器IP组' },
-  { id: 2, name: '办公网络IP组' },
-  { id: 3, name: 'VPN用户IP组' },
-  { id: 4, name: '管理员IP组' }
+
 ])
 
 // 查看IP地址组链接点击事件
@@ -131,7 +128,7 @@ onMounted(() => {
 
 <style scoped>
 .listener-config {
-  padding: 0 20px;  
+  padding: 0 20px;
   min-width: 100%
 }
 
