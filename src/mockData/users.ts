@@ -39,4 +39,16 @@ export let users: User[] = [
   }
 ]
 
+export type UserUpdatePayload = Partial<Pick<User, 'name' | 'email' | 'password'>>
+
+export function updateUserById(id: number, payload: UserUpdatePayload): User | null {
+  const index = users.findIndex(u => u.id === id)
+  if (index === -1) return null
+  const target = users[index]
+  if (payload.name !== undefined) target.name = payload.name
+  if (payload.email !== undefined) target.email = payload.email
+  if (payload.password !== undefined && payload.password !== '') target.password = payload.password
+  return { ...target }
+}
+
 export default users

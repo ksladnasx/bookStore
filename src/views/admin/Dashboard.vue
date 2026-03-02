@@ -1,21 +1,28 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useBookStore } from '../../stores/books'
 import { useRouter } from 'vue-router'
-import users from '../../mockData/users'
-
+import { fetchUsers } from '../../api/users'
+import { useI18n } from 'vue-i18n'
+import type { User } from '../../types'
 
 const bookStore = useBookStore()
 const router = useRouter()
+const { t } = useI18n()
+const usersList = ref<(Omit<User, 'password'> & { password: '' })[]>([])
+
+onMounted(async () => {
+  usersList.value = await fetchUsers()
+  await bookStore.fetchBorrowings()
+})
 
 const totalBooks = computed(() => bookStore.books.length)
 const availableBooks = computed(() => bookStore.books.filter(book => book.available).length)
 const borrowedBooks = computed(() => totalBooks.value - availableBooks.value)
-const totalUsers = computed(() => users.filter(user => user.role === 'user').length)
+const totalUsers = computed(() => usersList.value.filter(user => user.role === 'user').length)
 
 const booksByCategory = computed(() => {
   const categories: Record<string, number> = {}
-
   bookStore.books.forEach(book => {
     if (categories[book.category]) {
       categories[book.category]++
@@ -23,7 +30,6 @@ const booksByCategory = computed(() => {
       categories[book.category] = 1
     }
   })
-
   return Object.entries(categories).map(([name, value]) => ({ name, value }))
 })
 
@@ -33,15 +39,22 @@ const recentBorrowings = computed(() => {
     .slice(0, 5)
     .map(borrowing => {
       const book = bookStore.getBookById(borrowing.bookId)
-      const user = users.find(u => u.id === borrowing.userId)
-
+      const user = usersList.value.find(u => u.id === borrowing.userId)
       return {
         id: borrowing.id,
-        bookTitle: book?.title || 'Unknown Book',
-        userName: user?.name || 'Unknown User',
+        bookTitle: book?.title || t('admin.book'),
+        userName: user?.name || t('admin.user'),
         borrowDate: borrowing.borrowDate
       }
     })
+})
+
+const bookBorrowRanking = computed(() => {
+  return [...bookStore.books]
+    .map(b => ({ id: b.id, title: b.title, count: b.borrowedBy.length }))
+    .filter(b => b.count > 0)
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 10)
 })
 </script>
 
@@ -58,9 +71,9 @@ const recentBorrowings = computed(() => {
             </el-icon>
           </div>
           <div class="stats-content">
-            <h3>Total Books</h3>
+            <h3>{{ t('admin.totalBooks') }}</h3>
             <div class="stats-value">{{ totalBooks }}</div>
-            <el-link type="primary" @click="router.push('/admin/books')">View All Books</el-link>
+            <el-link type="primary" @click="router.push('/admin/books')">{{ t('admin.viewAllBooks') }}</el-link>
           </div>
         </div>
       </el-card>
@@ -73,9 +86,9 @@ const recentBorrowings = computed(() => {
             </el-icon>
           </div>
           <div class="stats-content">
-            <h3>Total Users</h3>
+            <h3>{{ t('admin.totalUsers') }}</h3>
             <div class="stats-value">{{ totalUsers }}</div>
-            <el-link type="primary" @click="router.push('/admin/users')">View All Users</el-link>
+            <el-link type="primary" @click="router.push('/admin/users')">{{ t('admin.viewAllUsers') }}</el-link>
           </div>
         </div>
       </el-card>
@@ -88,9 +101,9 @@ const recentBorrowings = computed(() => {
             </el-icon>
           </div>
           <div class="stats-content">
-            <h3>Borrowed Books</h3>
+            <h3>{{ t('admin.borrowedBooks') }}</h3>
             <div class="stats-value">{{ borrowedBooks }}</div>
-            <el-link type="primary" @click="router.push('/admin/borrowings')">View Borrowings</el-link>
+            <el-link type="primary" @click="router.push('/admin/borrowings')">{{ t('admin.viewBorrowings') }}</el-link>
           </div>
         </div>
       </el-card>
@@ -103,9 +116,9 @@ const recentBorrowings = computed(() => {
             </el-icon>
           </div>
           <div class="stats-content">
-            <h3>Available Books</h3>
+            <h3>{{ t('admin.availableBooks') }}</h3>
             <div class="stats-value">{{ availableBooks }}</div>
-            <div class="stats-percentage">{{ Math.round((availableBooks / totalBooks) * 100) }}% of total</div>
+            <div class="stats-percentage">{{ Math.round((availableBooks / totalBooks) * 100) }}% {{ t('admin.ofTotal') }}</div>
           </div>
         </div>
       </el-card>
@@ -115,14 +128,14 @@ const recentBorrowings = computed(() => {
       <el-card class="chart-card">
         <template #header>
           <div class="card-header">
-            <h3>书籍类型占比</h3>
+            <h3>{{ t('admin.booksByCategory') }}</h3>
           </div>
         </template>
 
         <el-table :data="booksByCategory" style="width: 100%">
-          <el-table-column prop="name" label="Category" />
-          <el-table-column prop="value" label="Count" width="100" />
-          <el-table-column label="Distribution" min-width="180">
+          <el-table-column prop="name" :label="t('admin.category')" />
+          <el-table-column prop="value" :label="t('admin.count')" width="100" />
+          <el-table-column :label="t('admin.distribution')" min-width="180">
             <template #default="{ row }">
               <div class="chart-bar-container">
                 <div class="chart-bar" :style="{ width: `${(row.value / totalBooks) * 100}%` }"></div>
@@ -133,30 +146,53 @@ const recentBorrowings = computed(() => {
         </el-table>
       </el-card>
 
-      <el-card class="recent-borrowings-card">
-        <template #header>
-          <div class="card-header">
-            <h3>最近借阅</h3>
-            <el-link type="primary" @click="router.push('/admin/borrowings')">全部 ></el-link>
+      <div class="dashboard-row-two">
+        <el-card class="recent-borrowings-card">
+          <template #header>
+            <div class="card-header">
+              <h3>{{ t('admin.recentBorrowings') }}</h3>
+              <el-link type="primary" @click="router.push('/admin/borrowings')">{{ t('admin.all') }} ></el-link>
+            </div>
+          </template>
+
+          <div v-if="recentBorrowings.length > 0">
+            <el-table :data="recentBorrowings" style="width: 100%">
+              <el-table-column prop="bookTitle" :label="t('admin.book')" />
+              <el-table-column prop="userName" :label="t('admin.user')" />
+              <el-table-column prop="borrowDate" :label="t('admin.date')" width="120" />
+            </el-table>
           </div>
-        </template>
 
-        <div v-if="recentBorrowings.length > 0">
-          <el-table :data="recentBorrowings" style="width: 100%">
-            <el-table-column prop="bookTitle" label="Book" />
-            <el-table-column prop="userName" label="User" />
-            <el-table-column prop="borrowDate" label="Date" width="120" />
-          </el-table>
-        </div>
+          <el-empty v-else :description="t('admin.noRecentBorrowings')" />
+        </el-card>
 
-        <el-empty v-else description="No recent borrowings" />
-      </el-card>
+        <el-card class="ranking-card">
+          <template #header>
+            <div class="card-header">
+              <h3>{{ t('admin.borrowRankTitle') }}</h3>
+            </div>
+          </template>
+
+          <div v-if="bookBorrowRanking.length > 0" class="ranking-list">
+            <div
+              v-for="(item, index) in bookBorrowRanking"
+              :key="item.id"
+              class="ranking-item"
+            >
+              <span class="ranking-index" :class="{ top: index < 3 }">{{ index + 1 }}</span>
+              <span class="ranking-title">{{ item.title }}</span>
+              <el-tag size="small" type="primary">{{ item.count }}</el-tag>
+            </div>
+          </div>
+          <el-empty v-else :description="t('admin.noRecentBorrowings')" />
+        </el-card>
+      </div>
     </div>
 
     <el-card>
       <template #header>
         <div class="card-header">
-          <h3>快捷操作</h3>
+          <h3>{{ t('admin.quickActions') }}</h3>
         </div>
       </template>
 
@@ -164,19 +200,19 @@ const recentBorrowings = computed(() => {
         <el-button type="primary" @click="router.push('/admin/books/add')">
           <el-icon>
             <Plus />
-          </el-icon> 添加书籍
+          </el-icon> {{ t('admin.addBook') }}
         </el-button>
 
         <el-button @click="router.push('/admin/borrowings')">
           <el-icon>
             <View />
-          </el-icon> 管理书籍
+          </el-icon> {{ t('admin.manageBorrowings') }}
         </el-button>
 
         <el-button @click="router.push('/admin/users')">
           <el-icon>
             <User />
-          </el-icon> 用户管理
+          </el-icon> {{ t('admin.manageUsers') }}
         </el-button>
       </div>
     </el-card>
@@ -259,13 +295,67 @@ const recentBorrowings = computed(() => {
 
 .dashboard-row {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  grid-template-columns: 1fr;
   gap: 24px;
 }
 
-.chart-card,
-.recent-borrowings-card {
+.dashboard-row-two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.chart-card {
   height: 100%;
+}
+
+.recent-borrowings-card,
+.ranking-card {
+  min-height: 280px;
+}
+
+.ranking-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ranking-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.ranking-item:last-child {
+  border-bottom: none;
+}
+
+.ranking-index {
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  text-align: center;
+  border-radius: 4px;
+  background: #f0f0f0;
+  color: #606266;
+  font-size: 12px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.ranking-index.top {
+  background: #409eff;
+  color: #fff;
+}
+
+.ranking-title {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
 }
 
 .card-header {
@@ -312,6 +402,10 @@ const recentBorrowings = computed(() => {
 
 @media (max-width: 768px) {
   .dashboard-row {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-row-two {
     grid-template-columns: 1fr;
   }
 

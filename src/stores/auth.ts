@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { User, LoginCredentials } from '../types'
+import * as authApi from '../api/auth'
 
 export type UserUpdatePayload = Partial<Pick<User, 'name' | 'email' | 'password'>>
 
@@ -28,12 +29,9 @@ export const useAuthStore = defineStore('auth', () => {
     loading.value = true
     error.value = ''
     try {
-      const data = await authApi.login(credentials)
-      currentUser.value = { ...data.user, password: '' } as User
+      const { user: userData } = await authApi.login(credentials)
+      currentUser.value = { ...userData, password: '' } as User
       localStorage.setItem('user', JSON.stringify(currentUser.value))
-      if (data.token) {
-        localStorage.setItem('token', data.token)
-      }
     } catch (e) {
       error.value = e instanceof Error ? e.message : 'Invalid username or password'
     } finally {

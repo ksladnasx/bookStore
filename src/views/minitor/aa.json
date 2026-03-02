@@ -1,0 +1,28 @@
+{
+  "error_code": 0,
+  "error_msg": "SUCCESS",
+  "log_id": 2496630980,
+  "timestamp": 1765266096,
+  "cached": 0,
+  "result": {
+    "thresholds": { "frr_1e-4": 0.05, "frr_1e-3": 0.3, "frr_1e-2": 0.9 },
+    "face_liveness": 0.07,
+    "avg_liveness": 0.07,
+    "mid_liveness": 0.07,
+    "face_list": [
+      {
+        "face_token": "f44bc3fe08561a8c0085b36ab1a0914e",
+        "location": {
+          "left": 113.35,
+          "top": 94.63,
+          "width": 92,
+          "height": 88,
+          "rotation": 0
+        },
+        "face_probability": 1,
+        "angle": { "yaw": -7.37, "pitch": 17.69, "roll": -2.31 },
+        "liveness": { "livemapscore": 0.07 }
+      }
+    ]
+  }
+}
