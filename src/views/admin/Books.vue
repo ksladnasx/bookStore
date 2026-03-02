@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useBookStore } from '../../stores/books'
 import { ElMessageBox, ElMessage } from 'element-plus'
@@ -10,6 +10,8 @@ const router = useRouter()
 const { t } = useI18n()
 const searchQuery = ref('')
 const categoryFilter = ref('')
+const currentPage = ref(1)
+const pageSize = ref(10)
 
 const filteredBooks = computed(() => {
   let result = [...bookStore.books]
@@ -28,6 +30,17 @@ const filteredBooks = computed(() => {
   }
   
   return result
+})
+
+// 分页后的当前页数据
+const paginatedBooks = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value
+  return filteredBooks.value.slice(start, start + pageSize.value)
+})
+
+// 筛选变化时回到第一页
+watch([searchQuery, categoryFilter], () => {
+  currentPage.value = 1
 })
 
 function addNewBook() {
@@ -104,7 +117,7 @@ function resetFilters() {
     </div>
     
     <el-table 
-      :data="filteredBooks" 
+      :data="paginatedBooks" 
       style="width: 100%"
       border
       stripe
@@ -182,11 +195,12 @@ function resetFilters() {
     
     <div class="pagination-container">
       <el-pagination
+        v-model:current-page="currentPage"
+        v-model:page-size="pageSize"
         background
         layout="prev, pager, next, sizes"
         :total="filteredBooks.length"
         :page-sizes="[10, 20, 50, 100]"
-        :default-page-size="10"
       />
     </div>
   </div>

@@ -91,6 +91,8 @@
   "auth.logout_confirm_message": "确定要退出登录吗？",
   "auth.logout_success": "已成功退出登录",
   "auth.login_success": "登录成功",
+  "auth.admin_welcome_title": "欢迎管理员",
+  "auth.admin_welcome_message": "欢迎管理员，点击顶部栏右侧可进入管理面板！",
   "auth.register_success": "注册成功，请登录",
   "admin.panel": "管理面板",
   "admin.backToSite": "返回站点",

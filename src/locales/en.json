@@ -92,6 +92,8 @@
   "auth.logout_confirm_message": "Are you sure you want to log out?",
   "auth.logout_success": "You have been logged out.",
   "auth.login_success": "Login successful.",
+  "auth.admin_welcome_title": "Welcome, Admin",
+  "auth.admin_welcome_message": "Welcome, Admin! You can enter the admin panel from the top bar on the right.",
   "auth.register_success": "Registration successful. Please log in.",
   "admin.panel": "Admin Panel",
   "admin.backToSite": "Back to Site",

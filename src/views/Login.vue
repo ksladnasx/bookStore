@@ -6,7 +6,7 @@ import type { FormInstance, FormRules } from 'element-plus'
 import { Edit } from '@element-plus/icons-vue'
 import { useI18n } from 'vue-i18n'
 import { useTheme } from '../stores/theme'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 
 const router = useRouter()
 const route = useRoute()
@@ -41,8 +41,16 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   if (!valid) return
   await authStore.login(loginForm)
   if (authStore.currentUser) {
-    ElMessage.success(t('auth.login_success'))
     const redirectPath = (route.query.redirect as string) || '/'
+    const isAdmin = authStore.currentUser.role === 'admin'
+    if (isAdmin) {
+      await ElMessageBox.alert(t('auth.admin_welcome_message'), t('auth.admin_welcome_title'), {
+        confirmButtonText: t('button.confirm'),
+        type: 'info'
+      })
+    } else {
+      ElMessage.success(t('auth.login_success'))
+    }
     router.push(redirectPath)
   }
 }

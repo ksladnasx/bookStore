@@ -60,10 +60,9 @@ function logout() {
       router.push('/')
       ElMessage.success(t('auth.logout_success'))
     })
-    .catch(() => {})
+    .catch(() => { })
 }
 
-import { useI18n } from 'vue-i18n'
 const { locale } = useI18n()
 const toggleLanguage = () => {
   locale.value = locale.value === 'zh' ? 'en' : 'zh'
@@ -83,7 +82,7 @@ const isDark = computed(() => theme.isdark);
     :class="{ 'dark-mode': isDark }">
     <el-menu-item index="1">{{ $t('layout1') }}</el-menu-item>
     <el-menu-item index="2">{{ $t('layout2') }}</el-menu-item>
-      <template v-if="isAuthenticated">
+    <template v-if="isAuthenticated">
       <el-menu-item index="3">{{ $t('layout3') }}</el-menu-item>
       <!-- <el-menu-item v-if="isAdmin" index="4">{{ $t('layout4') }}</el-menu-item> -->
     </template>
@@ -95,7 +94,6 @@ const isDark = computed(() => theme.isdark);
     <!-- 右侧操作区 -->
 
     <div class="navbar-actions">
-
       <el-menu-item @click="toggleLanguage">
         <span>{{ $t('actions.changeLanguage') }}：</span>
         <el-button class="language-btn" :title="$t('actions.changeLanguage')" circle size="large">
@@ -105,9 +103,9 @@ const isDark = computed(() => theme.isdark);
       <template v-if="isAuthenticated">
         <el-sub-menu index="user">
           <template #title>
-            <div>
+            <!-- <div>
               <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" />
-            </div>
+            </div> -->
             <span class="username">{{ currentUser?.name }}</span>
           </template>
           <el-menu-item v-if="isAdmin" index="4">{{ $t('layout4') }}</el-menu-item>
