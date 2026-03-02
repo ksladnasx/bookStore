@@ -6,7 +6,7 @@ import type { FormInstance, FormRules } from 'element-plus'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import { useTheme } from '../stores/theme'
-import { User, Key, ArrowLeft } from '@element-plus/icons-vue'
+import { User, Key } from '@element-plus/icons-vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
