@@ -1,93 +1,86 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useBookStore } from '../../stores/books'
-import users from '../../mockData/users'
+import { fetchUsers } from '../../api/users'
+import { returnBorrowing } from '../../api/borrowings'
 import { ElMessageBox, ElMessage } from 'element-plus'
+import { useI18n } from 'vue-i18n'
+import type { User } from '../../types'
 
 const bookStore = useBookStore()
+const { t } = useI18n()
 const statusFilter = ref('')
 const searchQuery = ref('')
 const loading = ref(false)
+const usersList = ref<(Omit<User, 'password'> & { password: '' })[]>([])
+
+onMounted(async () => {
+  loading.value = true
+  try {
+    await bookStore.fetchBorrowings()
+    usersList.value = await fetchUsers()
+  } finally {
+    loading.value = false
+  }
+})
 
 const allBorrowings = computed(() => {
   return bookStore.borrowings.map(borrowing => {
-    const user = users.find(u => u.id === borrowing.userId)
+    const user = usersList.value.find(u => u.id === borrowing.userId)
     const book = bookStore.getBookById(borrowing.bookId)
-    
     return {
       ...borrowing,
-      userName: user?.name || 'Unknown User',
-      bookTitle: book?.title || 'Unknown Book',
-      bookAuthor: book?.author || 'Unknown Author'
+      userName: user?.name || t('admin.user'),
+      bookTitle: book?.title || t('admin.book'),
+      bookAuthor: book?.author || t('admin.author')
     }
   })
 })
 
 const filteredBorrowings = computed(() => {
   let result = allBorrowings.value
-  
   if (statusFilter.value) {
     result = result.filter(b => b.status === statusFilter.value)
   }
-  
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
-    result = result.filter(b => 
+    result = result.filter(b =>
       b.userName.toLowerCase().includes(query) ||
       b.bookTitle.toLowerCase().includes(query) ||
       b.bookAuthor.toLowerCase().includes(query)
     )
   }
-  
   return result
 })
 
-function markAsReturned(borrowingId: number) {
+async function markAsReturned(borrowingId: number) {
   const borrowing = bookStore.borrowings.find(b => b.id === borrowingId)
-  
-  if (borrowing && borrowing.status === 'active') {
-    // Find the book
-    const book = bookStore.getBookById(borrowing.bookId)
-    
-    if (book) {
-      // Remove user from borrowedBy array
-      const index = book.borrowedBy.indexOf(borrowing.userId)
-      if (index !== -1) {
-        // Update book status
-        bookStore.updateBook(book.id, {
-          borrowedBy: book.borrowedBy.filter(id => id !== borrowing.userId),
-          available: true
-        })
-        
-        // Update borrowing record
-        const borrowingIndex = bookStore.borrowings.findIndex(b => b.id === borrowingId)
-        if (borrowingIndex !== -1) {
-          bookStore.borrowings[borrowingIndex].returnDate = new Date().toISOString().split('T')[0]
-          bookStore.borrowings[borrowingIndex].status = 'returned'
-          
-          ElMessage.success('Book marked as returned successfully')
-        }
-      }
-    }
+  if (!borrowing || (borrowing.status !== 'active' && borrowing.status !== 'overdue')) return
+  loading.value = true
+  try {
+    await returnBorrowing(borrowingId)
+    await bookStore.fetchBooks()
+    await bookStore.fetchBorrowings()
+    ElMessage.success(t('admin.returnSuccess'))
+  } catch (e) {
+    ElMessage.error(e instanceof Error ? e.message : t('register.confirm_error'))
+  } finally {
+    loading.value = false
   }
 }
 
 function confirmReturn(borrowingId: number) {
   ElMessageBox.confirm(
-    'Are you sure you want to mark this book as returned?',
-    'Confirm Return',
+    t('admin.confirmReturnMessage'),
+    t('admin.confirmReturnTitle'),
     {
-      confirmButtonText: 'Confirm',
-      cancelButtonText: 'Cancel',
-      type: 'warning',
+      confirmButtonText: t('button.confirm'),
+      cancelButtonText: t('button.cancel'),
+      type: 'warning'
     }
   )
-    .then(() => {
-      markAsReturned(borrowingId)
-    })
-    .catch(() => {
-      // User cancelled
-    })
+    .then(() => markAsReturned(borrowingId))
+    .catch(() => {})
 }
 
 function resetFilters() {
@@ -99,13 +92,13 @@ function resetFilters() {
 <template>
   <div class="admin-borrowings">
     <div class="admin-borrowings-header">
-      <h2>Manage Borrowings</h2>
+      <h2>{{ t('admin.manageBorrowingsTitle') }}</h2>
     </div>
     
     <div class="filter-section">
       <el-input
         v-model="searchQuery"
-        placeholder="Search by user or book"
+        :placeholder="t('admin.searchByUserOrBook')"
         class="search-input"
         clearable
       >
@@ -116,16 +109,16 @@ function resetFilters() {
 
       <el-select
         v-model="statusFilter"
-        placeholder="Filter by status"
+        :placeholder="t('admin.filterByStatus')"
         clearable
         class="status-filter"
       >
-        <el-option label="Active" value="active" />
-        <el-option label="Returned" value="returned" />
-        <el-option label="Overdue" value="overdue" />
+        <el-option :label="t('admin.active')" value="active" />
+        <el-option :label="t('admin.returned')" value="returned" />
+        <el-option :label="t('admin.overdue')" value="overdue" />
       </el-select>
 
-      <el-button @click="resetFilters" plain>Reset Filters</el-button>
+      <el-button @click="resetFilters" plain>{{ t('admin.resetFilters') }}</el-button>
     </div>
     
     <el-table 
@@ -135,32 +128,32 @@ function resetFilters() {
       stripe
       v-loading="loading"
     >
-      <el-table-column prop="userName" label="User" min-width="150" sortable />
+      <el-table-column prop="userName" :label="t('admin.user')" min-width="150" sortable />
       
-      <el-table-column prop="bookTitle" label="Book Title" min-width="200" sortable />
+      <el-table-column prop="bookTitle" :label="t('admin.bookTitle')" min-width="200" sortable />
       
-      <el-table-column prop="bookAuthor" label="Author" min-width="150" />
+      <el-table-column prop="bookAuthor" :label="t('admin.author')" min-width="150" />
       
-      <el-table-column prop="borrowDate" label="Borrow Date" width="120" sortable />
+      <el-table-column prop="borrowDate" :label="t('admin.borrowDate')" width="120" sortable />
       
-      <el-table-column prop="returnDate" label="Return Date" width="120">
+      <el-table-column prop="returnDate" :label="t('admin.returnDate')" width="120">
         <template #default="{ row }">
-          {{ row.returnDate || 'Not returned' }}
+          {{ row.returnDate || t('admin.notReturned') }}
         </template>
       </el-table-column>
       
-      <el-table-column label="Status" width="120">
+      <el-table-column :label="t('admin.status')" width="120">
         <template #default="{ row }">
           <el-tag 
             :type="row.status === 'active' ? 'primary' : 
                    row.status === 'returned' ? 'success' : 'danger'"
           >
-            {{ row.status }}
+            {{ row.status === 'active' ? t('admin.active') : row.status === 'returned' ? t('admin.returned') : t('admin.overdue') }}
           </el-tag>
         </template>
       </el-table-column>
       
-      <el-table-column label="Actions" width="120" fixed="right">
+      <el-table-column :label="t('admin.actions')" width="120" fixed="right">
         <template #default="{ row }">
           <el-button 
             size="small" 
@@ -169,7 +162,7 @@ function resetFilters() {
             @click="confirmReturn(row.id)"
             :disabled="row.status !== 'active' && row.status !== 'overdue'"
           >
-            Mark as Returned
+            {{ t('admin.markAsReturned') }}
           </el-button>
         </template>
       </el-table-column>

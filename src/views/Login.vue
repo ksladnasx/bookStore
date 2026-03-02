@@ -6,6 +6,7 @@ import type { FormInstance, FormRules } from 'element-plus'
 import { Edit } from '@element-plus/icons-vue'
 import { useI18n } from 'vue-i18n'
 import { useTheme } from '../stores/theme'
+import { ElMessage, ElMessageBox } from 'element-plus'
 
 const router = useRouter()
 const route = useRoute()
@@ -36,18 +37,22 @@ const error = computed(() => authStore.error)
 
 const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
-  await formEl.validate((valid) => {
-    if (valid) {
-      authStore.login(loginForm)
-      const unwatch = authStore.$subscribe((mutation, state) => {
-        if (state.currentUser && !state.loading) {
-          unwatch()
-          const redirectPath = route.query.redirect as string || '/'
-          router.push(redirectPath)
-        }
+  const valid = await formEl.validate().catch(() => false)
+  if (!valid) return
+  await authStore.login(loginForm)
+  if (authStore.currentUser) {
+    const redirectPath = (route.query.redirect as string) || '/'
+    const isAdmin = authStore.currentUser.role === 'admin'
+    if (isAdmin) {
+      await ElMessageBox.alert(t('auth.admin_welcome_message'), t('auth.admin_welcome_title'), {
+        confirmButtonText: t('button.confirm'),
+        type: 'info'
       })
+    } else {
+      ElMessage.success(t('auth.login_success'))
     }
-  })
+    router.push(redirectPath)
+  }
 }
 
 const resetForm = (formEl: FormInstance | undefined) => {

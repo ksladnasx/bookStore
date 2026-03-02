@@ -2,10 +2,12 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
-
+import { ElMessageBox, ElMessage } from 'element-plus'
+import { useI18n } from 'vue-i18n'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const { t } = useI18n()
 
 const isAuthenticated = computed(() => authStore.isAuthenticated)
 const isAdmin = computed(() => authStore.isAdmin)
@@ -13,6 +15,10 @@ const currentUser = computed(() => authStore.currentUser)
 
 
 function handleSelect(key: string) {
+  if (key === 'logout' || key.endsWith('-logout')) {
+    logout()
+    return
+  }
   authStore.changeactiveIndex(key)
   switch (key) {
     case '1':
@@ -24,27 +30,39 @@ function handleSelect(key: string) {
     case '3':
       router.push('/my-books')
       break
+    case '5':
+      router.push('/account')
+      break
     case '4':
       router.push('/admin')
       break
-    case '6':
-      router.push('/tests')
-      break
-    case 'logout':
-      logout()
-      break
     case 'login':
       router.push('/login')
+      break
+    default:
+      if (key === 'admin' || key.startsWith('admin')) router.push('/admin')
       break
   }
 }
 
 function logout() {
-  authStore.logout()
-  router.push('/')
+  ElMessageBox.confirm(
+    t('auth.logout_confirm_message'),
+    t('auth.logout_confirm_title'),
+    {
+      confirmButtonText: t('button.confirm'),
+      cancelButtonText: t('button.cancel'),
+      type: 'info'
+    }
+  )
+    .then(() => {
+      authStore.logout()
+      router.push('/')
+      ElMessage.success(t('auth.logout_success'))
+    })
+    .catch(() => { })
 }
 
-import { useI18n } from 'vue-i18n'
 const { locale } = useI18n()
 const toggleLanguage = () => {
   locale.value = locale.value === 'zh' ? 'en' : 'zh'
@@ -66,7 +84,6 @@ const isDark = computed(() => theme.isdark);
     <el-menu-item index="2">{{ $t('layout2') }}</el-menu-item>
     <template v-if="isAuthenticated">
       <el-menu-item index="3">{{ $t('layout3') }}</el-menu-item>
-      <el-menu-item index="6">Tests</el-menu-item>
       <!-- <el-menu-item v-if="isAdmin" index="4">{{ $t('layout4') }}</el-menu-item> -->
     </template>
     <div>
@@ -77,7 +94,6 @@ const isDark = computed(() => theme.isdark);
     <!-- 右侧操作区 -->
 
     <div class="navbar-actions">
-
       <el-menu-item @click="toggleLanguage">
         <span>{{ $t('actions.changeLanguage') }}：</span>
         <el-button class="language-btn" :title="$t('actions.changeLanguage')" circle size="large">
@@ -87,13 +103,14 @@ const isDark = computed(() => theme.isdark);
       <template v-if="isAuthenticated">
         <el-sub-menu index="user">
           <template #title>
-            <div>
+            <!-- <div>
               <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" />
-            </div>
+            </div> -->
             <span class="username">{{ currentUser?.name }}</span>
           </template>
-          <el-menu-item v-if="isAdmin" index="4">{{ $t('layout4') }}</el-menu-item> 
-          <el-menu-item index="logout">{{ $t('logout') }}</el-menu-item>
+          <el-menu-item v-if="isAdmin" index="4">{{ $t('layout4') }}</el-menu-item>
+          <el-menu-item index="5">{{ $t('account.nav') }}</el-menu-item>
+          <el-menu-item index="logout" @click="logout">{{ $t('logout') }}</el-menu-item>
         </el-sub-menu>
       </template>
       <template v-else>

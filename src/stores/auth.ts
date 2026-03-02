@@ -1,7 +1,9 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { User, LoginCredentials } from '../types'
-import users from '../mockData/users'
+import * as authApi from '../api/auth'
+
+export type UserUpdatePayload = Partial<Pick<User, 'name' | 'email' | 'password'>>
 
 export const useAuthStore = defineStore('auth', () => {
   const user = localStorage.getItem('user')
@@ -10,43 +12,49 @@ export const useAuthStore = defineStore('auth', () => {
   const loading = ref(false)
   const error = ref('')
   if (user) {
-    currentUser.value = JSON.parse(user) as User
+    try {
+      currentUser.value = JSON.parse(user) as User
+    } catch {
+      currentUser.value = null
+    }
   }
   const isAuthenticated = computed(() => !!currentUser.value)
   const isAdmin = computed(() => currentUser.value?.role === 'admin')
 
-  //更换路由索引的函数
   function changeactiveIndex(val: string) {
     activeIndex.value = val
   }
 
-  function login(credentials: LoginCredentials) {
+  async function login(credentials: LoginCredentials) {
     loading.value = true
     error.value = ''
-
-    // Simulate API request delay
-    setTimeout(() => {
-      const user = users.find(
-        u => u.username === credentials.username && u.password === credentials.password
-      )
-      
-
-      if (user) {
-        // Don't include password in the stored user object
-        const { password, ...userWithoutPassword } = user
-        currentUser.value = { ...userWithoutPassword, password: '' }
-        localStorage.setItem('user', JSON.stringify(currentUser.value))
-        loading.value = false
-      } else {
-        error.value = 'Invalid username or password'
-        loading.value = false
-      }
-    }, 800)
+    try {
+      const { user: userData } = await authApi.login(credentials)
+      currentUser.value = { ...userData, password: '' } as User
+      localStorage.setItem('user', JSON.stringify(currentUser.value))
+    } catch (e) {
+      error.value = e instanceof Error ? e.message : 'Invalid username or password'
+    } finally {
+      loading.value = false
+    }
   }
 
   function logout() {
     localStorage.removeItem('user')
     currentUser.value = null
+    authApi.logout().catch(() => {})
+  }
+
+  async function updateProfile(payload: UserUpdatePayload): Promise<boolean> {
+    if (!currentUser.value) return false
+    try {
+      const updated = await authApi.updateUserProfile(currentUser.value.id, payload)
+      currentUser.value = { ...updated, password: '' } as User
+      localStorage.setItem('user', JSON.stringify(currentUser.value))
+      return true
+    } catch {
+      return false
+    }
   }
 
   return {
@@ -56,6 +64,7 @@ export const useAuthStore = defineStore('auth', () => {
     isAuthenticated,
     isAdmin, activeIndex, changeactiveIndex,
     login,
-    logout
+    logout,
+    updateProfile
   }
 })

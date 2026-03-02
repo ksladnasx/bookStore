@@ -3,10 +3,12 @@ import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useBookStore } from '../../stores/books'
 import { ElMessage } from 'element-plus'
+import { useI18n } from 'vue-i18n'
 import type { FormInstance, FormRules } from 'element-plus'
 
 const router = useRouter()
 const bookStore = useBookStore()
+const { t } = useI18n()
 const formRef = ref<FormInstance>()
 
 const bookForm = reactive({
@@ -24,58 +26,48 @@ const categories = bookStore.categories
 
 const rules = reactive<FormRules>({
   title: [
-    { required: true, message: 'Please input book title', trigger: 'blur' },
-    { min: 2, message: 'Title must be at least 2 characters', trigger: 'blur' }
+    { required: true, message: () => t('admin.bookTitleRequired'), trigger: 'blur' },
+    { min: 2, message: () => t('admin.bookTitleMin'), trigger: 'blur' }
   ],
   author: [
-    { required: true, message: 'Please input author name', trigger: 'blur' },
-    { min: 2, message: 'Author must be at least 2 characters', trigger: 'blur' }
+    { required: true, message: () => t('admin.authorRequired'), trigger: 'blur' },
+    { min: 2, message: () => t('admin.authorMin'), trigger: 'blur' }
   ],
   isbn: [
-    { required: true, message: 'Please input ISBN', trigger: 'blur' },
-    { min: 10, message: 'ISBN must be at least 10 characters', trigger: 'blur' }
+    { required: true, message: () => t('admin.isbnRequired'), trigger: 'blur' },
+    { min: 10, message: () => t('admin.isbnMin'), trigger: 'blur' }
   ],
   publishYear: [
-    { required: true, message: 'Please input publish year', trigger: 'blur' },
-    { 
-      type: 'number', 
-      min: 1000, 
-      max: new Date().getFullYear(), 
-      message: 'Please enter a valid year', 
-      trigger: 'blur' 
-    }
+    { required: true, message: () => t('admin.publishYear'), trigger: 'blur' },
+    { type: 'number', min: 1000, max: new Date().getFullYear(), message: () => t('admin.publishYearValid'), trigger: 'blur' }
   ],
   category: [
-    { required: true, message: 'Please select a category', trigger: 'change' }
+    { required: true, message: () => t('admin.categoryLabel'), trigger: 'change' }
   ],
   description: [
-    { required: true, message: 'Please input description', trigger: 'blur' },
-    { min: 10, message: 'Description must be at least 10 characters', trigger: 'blur' }
+    { required: true, message: () => t('admin.descriptionRequired'), trigger: 'blur' },
+    { min: 10, message: () => t('admin.descriptionMin'), trigger: 'blur' }
   ],
   coverImage: [
-    { required: true, message: 'Please input cover image URL', trigger: 'blur' }
+    { required: true, message: () => t('admin.coverImageRequired'), trigger: 'blur' }
   ],
   quantity: [
-    { required: true, message: 'Please input quantity', trigger: 'blur' },
-    { 
-      type: 'number', 
-      min: 1, 
-      message: 'Quantity must be at least 1', 
-      trigger: 'blur' 
-    }
+    { required: true, message: () => t('admin.quantity'), trigger: 'blur' },
+    { type: 'number', min: 1, message: () => t('admin.quantityMin'), trigger: 'blur' }
   ]
 })
 
 const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
-  
-  await formEl.validate((valid) => {
-    if (valid) {
-      bookStore.addBook(bookForm)
-      ElMessage.success('Book added successfully')
-      router.push('/admin/books')
-    }
-  })
+  const valid = await formEl.validate().catch(() => false)
+  if (!valid) return
+  try {
+    await bookStore.addBook(bookForm)
+    ElMessage.success(t('admin.addBookSuccess'))
+    router.push('/admin/books')
+  } catch (e) {
+    ElMessage.error(e instanceof Error ? e.message : t('register.confirm_error'))
+  }
 }
 
 const resetForm = (formEl: FormInstance | undefined) => {
@@ -91,7 +83,7 @@ const handleCancel = () => {
 <template>
   <div class="add-book">
     <div class="form-header">
-      <h2>新增书籍</h2>
+      <h2>{{ t('admin.addBookTitle') }}</h2>
     </div>
     
     <el-form
@@ -102,23 +94,23 @@ const handleCancel = () => {
     >
       <el-row :gutter="24">
         <el-col :span="24" :md="12">
-          <el-form-item label="Title" prop="title">
+          <el-form-item :label="t('admin.bookTitleLabel')" prop="title">
             <el-input v-model="bookForm.title" />
           </el-form-item>
           
-          <el-form-item label="Author" prop="author">
+          <el-form-item :label="t('admin.authorLabel')" prop="author">
             <el-input v-model="bookForm.author" />
           </el-form-item>
           
           <el-row :gutter="12">
             <el-col :span="12">
-              <el-form-item label="ISBN" prop="isbn">
+              <el-form-item :label="t('admin.isbnLabel')" prop="isbn">
                 <el-input v-model="bookForm.isbn" />
               </el-form-item>
             </el-col>
             
             <el-col :span="12">
-              <el-form-item label="Publish Year" prop="publishYear">
+              <el-form-item :label="t('admin.publishYear')" prop="publishYear">
                 <el-input-number v-model="bookForm.publishYear" :min="1000" :max="new Date().getFullYear()" />
               </el-form-item>
             </el-col>
@@ -126,47 +118,47 @@ const handleCancel = () => {
           
           <el-row :gutter="12">
             <el-col :span="12">
-              <el-form-item label="Category" prop="category">
-                <el-select v-model="bookForm.category" placeholder="Select category" style="width: 100%">
+              <el-form-item :label="t('admin.categoryLabel')" prop="category">
+                <el-select v-model="bookForm.category" :placeholder="t('admin.selectCategory')" style="width: 100%">
                   <el-option
                     v-for="category in categories"
                     :key="category"
                     :label="category"
                     :value="category"
                   />
-                  <el-option label="Other" value="Other" />
+                  <el-option :label="t('admin.other')" value="Other" />
                 </el-select>
               </el-form-item>
             </el-col>
             
             <el-col :span="12">
-              <el-form-item label="Quantity" prop="quantity">
+              <el-form-item :label="t('admin.quantity')" prop="quantity">
                 <el-input-number v-model="bookForm.quantity" :min="1" :precision="0" />
               </el-form-item>
             </el-col>
           </el-row>
           
-          <el-form-item label="Description" prop="description">
+          <el-form-item :label="t('admin.description')" prop="description">
             <el-input v-model="bookForm.description" type="textarea" :rows="4" />
           </el-form-item>
         </el-col>
         
         <el-col :span="24" :md="12">
-          <el-form-item label="Cover Image URL" prop="coverImage">
+          <el-form-item :label="t('admin.coverImageUrl')" prop="coverImage">
             <el-input v-model="bookForm.coverImage" />
           </el-form-item>
           
-          <el-form-item label="Preview">
+          <el-form-item :label="t('admin.preview')">
             <div class="cover-preview">
               <img 
                 v-if="bookForm.coverImage" 
                 :src="bookForm.coverImage" 
-                alt="Book cover preview" 
+                alt="Book cover" 
                 class="cover-image" 
               />
               <div v-else class="no-image">
                 <el-icon><Picture /></el-icon>
-                <span>No image URL provided</span>
+                <span>{{ t('admin.noImage') }}</span>
               </div>
             </div>
           </el-form-item>
@@ -174,10 +166,10 @@ const handleCancel = () => {
       </el-row>
       
       <div class="form-actions">
-        <el-button @click="handleCancel">Cancel</el-button>
-        <el-button @click="resetForm(formRef)">Reset</el-button>
+        <el-button @click="handleCancel">{{ t('button.cancel') }}</el-button>
+        <el-button @click="resetForm(formRef)">{{ t('actions.reset') }}</el-button>
         <el-button type="primary" @click="submitForm(formRef)" :loading="bookStore.loading">
-          Add Book
+          {{ t('admin.addBookBtn') }}
         </el-button>
       </div>
     </el-form>
