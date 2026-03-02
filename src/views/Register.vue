@@ -6,6 +6,7 @@ import { Edit } from '@element-plus/icons-vue'
 import { useI18n } from 'vue-i18n'
 import { useTheme } from '../stores/theme'
 import { register as registerApi } from '../api/auth'
+import { ElMessage } from 'element-plus'
 
 const router = useRouter()
 const { t } = useI18n()
@@ -57,6 +58,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
       username: registerForm.username,
       password: registerForm.password
     })
+    ElMessage.success(t('auth.register_success'))
     router.push('/login')
   } catch (e) {
     error.value = e instanceof Error ? e.message : t('register.confirm_error')

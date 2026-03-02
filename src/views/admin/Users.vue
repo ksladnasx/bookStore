@@ -2,9 +2,11 @@
 import { ref, computed, onMounted } from 'vue'
 import { fetchUsers } from '../../api/users'
 import { useBookStore } from '../../stores/books'
+import { useI18n } from 'vue-i18n'
 import type { User } from '../../types'
 
 const bookStore = useBookStore()
+const { t } = useI18n()
 const searchQuery = ref('')
 const loading = ref(false)
 const usersList = ref<(Omit<User, 'password'> & { password: '' })[]>([])
@@ -44,13 +46,13 @@ function getBorrowingCount(userId: number) {
 <template>
   <div class="admin-users">
     <div class="admin-users-header">
-      <h2>Manage Users</h2>
+      <h2>{{ t('admin.manageUsersTitle') }}</h2>
     </div>
     
     <div class="filter-section">
       <el-input
         v-model="searchQuery"
-        placeholder="Search users by name, username or email"
+        :placeholder="t('admin.searchUsersPlaceholder')"
         class="search-input"
         clearable
       >
@@ -67,24 +69,24 @@ function getBorrowingCount(userId: number) {
       stripe
       v-loading="loading"
     >
-      <el-table-column label="ID" prop="id" width="80" />
+      <el-table-column :label="t('admin.id')" prop="id" width="80" />
       
-      <el-table-column prop="name" label="Name" min-width="150" sortable />
+      <el-table-column prop="name" :label="t('admin.name')" min-width="150" sortable />
       
-      <el-table-column prop="username" label="Username" min-width="120" sortable />
+      <el-table-column prop="username" :label="t('admin.username')" min-width="120" sortable />
       
-      <el-table-column prop="email" label="Email" min-width="180" />
+      <el-table-column prop="email" :label="t('admin.email')" min-width="180" />
       
-      <el-table-column label="Borrowed Books" min-width="200">
+      <el-table-column :label="t('admin.borrowedBooksList')" min-width="200">
         <template #default="{ row }">
           <span v-if="getBorrowingCount(row.id) > 0">
             {{ getUserBorrowedBooks(row.id) }}
           </span>
-          <span v-else class="no-books">No books currently borrowed</span>
+          <span v-else class="no-books">{{ t('admin.noBooksBorrowed') }}</span>
         </template>
       </el-table-column>
       
-      <el-table-column label="Borrowing Count" width="150" sortable>
+      <el-table-column :label="t('admin.borrowingCount')" width="150" sortable>
         <template #default="{ row }">
           <el-tag 
             :type="getBorrowingCount(row.id) > 0 ? 'primary' : 'info'"

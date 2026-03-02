@@ -3,9 +3,11 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useBookStore } from '../../stores/books'
 import { ElMessageBox, ElMessage } from 'element-plus'
+import { useI18n } from 'vue-i18n'
 
 const bookStore = useBookStore()
 const router = useRouter()
+const { t } = useI18n()
 const searchQuery = ref('')
 const categoryFilter = ref('')
 
@@ -38,21 +40,19 @@ function editBook(id: number) {
 
 function deleteBook(id: number) {
   ElMessageBox.confirm(
-    'Are you sure you want to delete this book? This action cannot be undone.',
-    'Delete Book',
+    t('admin.deleteBookConfirm'),
+    t('admin.delete'),
     {
-      confirmButtonText: 'Delete',
-      cancelButtonText: 'Cancel',
+      confirmButtonText: t('admin.delete'),
+      cancelButtonText: t('button.cancel'),
       type: 'warning',
     }
   )
     .then(() => {
       bookStore.deleteBook(id)
-      ElMessage.success('Book deleted successfully')
+      ElMessage.success(t('admin.deleteBookSuccess'))
     })
-    .catch(() => {
-      // User cancelled
-    })
+    .catch(() => {})
 }
 
 function viewBookDetails(id: number) {
@@ -68,16 +68,16 @@ function resetFilters() {
 <template>
   <div class="admin-books">
     <div class="admin-books-header">
-      <h2>Manage Books</h2>
+      <h2>{{ t('admin.manageBooksTitle') }}</h2>
       <el-button type="primary" @click="addNewBook">
-        <el-icon><Plus /></el-icon> Add New Book
+        <el-icon><Plus /></el-icon> {{ t('admin.addNewBook') }}
       </el-button>
     </div>
     
     <div class="filter-section">
       <el-input
         v-model="searchQuery"
-        placeholder="Search books by title, author or ISBN"
+        :placeholder="t('admin.searchBooksPlaceholder')"
         class="search-input"
         clearable
       >
@@ -88,7 +88,7 @@ function resetFilters() {
 
       <el-select
         v-model="categoryFilter"
-        placeholder="Filter by category"
+        :placeholder="t('admin.filterByCategory')"
         clearable
         class="category-filter"
       >
@@ -100,7 +100,7 @@ function resetFilters() {
         />
       </el-select>
 
-      <el-button @click="resetFilters" plain>Reset Filters</el-button>
+      <el-button @click="resetFilters" plain>{{ t('admin.resetFilters') }}</el-button>
     </div>
     
     <el-table 
@@ -110,7 +110,7 @@ function resetFilters() {
       stripe
       v-loading="bookStore.loading"
     >
-      <el-table-column label="Cover" width="80">
+      <el-table-column :label="t('admin.cover')" width="80">
         <template #default="{ row }">
           <el-image 
             :src="row.coverImage" 
@@ -120,34 +120,34 @@ function resetFilters() {
         </template>
       </el-table-column>
       
-      <el-table-column prop="title" label="Title" min-width="180" sortable />
+      <el-table-column prop="title" :label="t('admin.title')" min-width="180" sortable />
       
-      <el-table-column prop="author" label="Author" min-width="150" sortable />
+      <el-table-column prop="author" :label="t('admin.author')" min-width="150" sortable />
       
-      <el-table-column prop="category" label="Category" width="120" sortable />
+      <el-table-column prop="category" :label="t('admin.category')" width="120" sortable />
       
-      <el-table-column prop="publishYear" label="Year" width="100" sortable />
+      <el-table-column prop="publishYear" :label="t('admin.year')" width="100" sortable />
       
       <el-table-column prop="isbn" label="ISBN" min-width="150" />
       
-      <el-table-column label="Status" width="120">
+      <el-table-column :label="t('admin.status')" width="120">
         <template #default="{ row }">
           <el-tag 
             :type="row.available ? 'success' : 'danger'" 
             effect="plain"
           >
-            {{ row.available ? 'Available' : 'Borrowed' }}
+            {{ row.available ? t('admin.available') : t('admin.borrowed') }}
           </el-tag>
         </template>
       </el-table-column>
       
-      <el-table-column label="Availability" width="120">
+      <el-table-column :label="t('admin.availability')" width="120">
         <template #default="{ row }">
           {{ row.quantity - row.borrowedBy.length }} / {{ row.quantity }}
         </template>
       </el-table-column>
       
-      <el-table-column label="Actions" width="200" fixed="right">
+      <el-table-column :label="t('admin.actions')" width="200" fixed="right">
         <template #default="{ row }">
           <el-button-group>
             <el-button 
@@ -156,7 +156,7 @@ function resetFilters() {
               plain
               @click="viewBookDetails(row.id)"
             >
-              View
+              {{ t('admin.view') }}
             </el-button>
             
             <el-button 
@@ -164,7 +164,7 @@ function resetFilters() {
               type="primary"
               @click="editBook(row.id)"
             >
-              Edit
+              {{ t('admin.edit') }}
             </el-button>
             
             <el-button 
@@ -173,7 +173,7 @@ function resetFilters() {
               :disabled="row.borrowedBy.length > 0"
               @click="deleteBook(row.id)"
             >
-              Delete
+              {{ t('admin.delete') }}
             </el-button>
           </el-button-group>
         </template>

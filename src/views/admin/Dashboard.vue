@@ -3,10 +3,12 @@ import { ref, computed, onMounted } from 'vue'
 import { useBookStore } from '../../stores/books'
 import { useRouter } from 'vue-router'
 import { fetchUsers } from '../../api/users'
+import { useI18n } from 'vue-i18n'
 import type { User } from '../../types'
 
 const bookStore = useBookStore()
 const router = useRouter()
+const { t } = useI18n()
 const usersList = ref<(Omit<User, 'password'> & { password: '' })[]>([])
 
 onMounted(async () => {
@@ -40,8 +42,8 @@ const recentBorrowings = computed(() => {
       const user = usersList.value.find(u => u.id === borrowing.userId)
       return {
         id: borrowing.id,
-        bookTitle: book?.title || 'Unknown Book',
-        userName: user?.name || 'Unknown User',
+        bookTitle: book?.title || t('admin.book'),
+        userName: user?.name || t('admin.user'),
         borrowDate: borrowing.borrowDate
       }
     })
@@ -61,9 +63,9 @@ const recentBorrowings = computed(() => {
             </el-icon>
           </div>
           <div class="stats-content">
-            <h3>Total Books</h3>
+            <h3>{{ t('admin.totalBooks') }}</h3>
             <div class="stats-value">{{ totalBooks }}</div>
-            <el-link type="primary" @click="router.push('/admin/books')">View All Books</el-link>
+            <el-link type="primary" @click="router.push('/admin/books')">{{ t('admin.viewAllBooks') }}</el-link>
           </div>
         </div>
       </el-card>
@@ -76,9 +78,9 @@ const recentBorrowings = computed(() => {
             </el-icon>
           </div>
           <div class="stats-content">
-            <h3>Total Users</h3>
+            <h3>{{ t('admin.totalUsers') }}</h3>
             <div class="stats-value">{{ totalUsers }}</div>
-            <el-link type="primary" @click="router.push('/admin/users')">View All Users</el-link>
+            <el-link type="primary" @click="router.push('/admin/users')">{{ t('admin.viewAllUsers') }}</el-link>
           </div>
         </div>
       </el-card>
@@ -91,9 +93,9 @@ const recentBorrowings = computed(() => {
             </el-icon>
           </div>
           <div class="stats-content">
-            <h3>Borrowed Books</h3>
+            <h3>{{ t('admin.borrowedBooks') }}</h3>
             <div class="stats-value">{{ borrowedBooks }}</div>
-            <el-link type="primary" @click="router.push('/admin/borrowings')">View Borrowings</el-link>
+            <el-link type="primary" @click="router.push('/admin/borrowings')">{{ t('admin.viewBorrowings') }}</el-link>
           </div>
         </div>
       </el-card>
@@ -106,9 +108,9 @@ const recentBorrowings = computed(() => {
             </el-icon>
           </div>
           <div class="stats-content">
-            <h3>Available Books</h3>
+            <h3>{{ t('admin.availableBooks') }}</h3>
             <div class="stats-value">{{ availableBooks }}</div>
-            <div class="stats-percentage">{{ Math.round((availableBooks / totalBooks) * 100) }}% of total</div>
+            <div class="stats-percentage">{{ Math.round((availableBooks / totalBooks) * 100) }}% {{ t('admin.ofTotal') }}</div>
           </div>
         </div>
       </el-card>
@@ -118,14 +120,14 @@ const recentBorrowings = computed(() => {
       <el-card class="chart-card">
         <template #header>
           <div class="card-header">
-            <h3>书籍类型占比</h3>
+            <h3>{{ t('admin.booksByCategory') }}</h3>
           </div>
         </template>
 
         <el-table :data="booksByCategory" style="width: 100%">
-          <el-table-column prop="name" label="Category" />
-          <el-table-column prop="value" label="Count" width="100" />
-          <el-table-column label="Distribution" min-width="180">
+          <el-table-column prop="name" :label="t('admin.category')" />
+          <el-table-column prop="value" :label="t('admin.count')" width="100" />
+          <el-table-column :label="t('admin.distribution')" min-width="180">
             <template #default="{ row }">
               <div class="chart-bar-container">
                 <div class="chart-bar" :style="{ width: `${(row.value / totalBooks) * 100}%` }"></div>
@@ -139,27 +141,27 @@ const recentBorrowings = computed(() => {
       <el-card class="recent-borrowings-card">
         <template #header>
           <div class="card-header">
-            <h3>最近借阅</h3>
-            <el-link type="primary" @click="router.push('/admin/borrowings')">全部 ></el-link>
+            <h3>{{ t('admin.recentBorrowings') }}</h3>
+            <el-link type="primary" @click="router.push('/admin/borrowings')">{{ t('admin.all') }} ></el-link>
           </div>
         </template>
 
         <div v-if="recentBorrowings.length > 0">
           <el-table :data="recentBorrowings" style="width: 100%">
-            <el-table-column prop="bookTitle" label="Book" />
-            <el-table-column prop="userName" label="User" />
-            <el-table-column prop="borrowDate" label="Date" width="120" />
+            <el-table-column prop="bookTitle" :label="t('admin.book')" />
+            <el-table-column prop="userName" :label="t('admin.user')" />
+            <el-table-column prop="borrowDate" :label="t('admin.date')" width="120" />
           </el-table>
         </div>
 
-        <el-empty v-else description="No recent borrowings" />
+        <el-empty v-else :description="t('admin.noRecentBorrowings')" />
       </el-card>
     </div>
 
     <el-card>
       <template #header>
         <div class="card-header">
-          <h3>快捷操作</h3>
+          <h3>{{ t('admin.quickActions') }}</h3>
         </div>
       </template>
 
@@ -167,19 +169,19 @@ const recentBorrowings = computed(() => {
         <el-button type="primary" @click="router.push('/admin/books/add')">
           <el-icon>
             <Plus />
-          </el-icon> 添加书籍
+          </el-icon> {{ t('admin.addBook') }}
         </el-button>
 
         <el-button @click="router.push('/admin/borrowings')">
           <el-icon>
             <View />
-          </el-icon> 管理书籍
+          </el-icon> {{ t('admin.manageBorrowings') }}
         </el-button>
 
         <el-button @click="router.push('/admin/users')">
           <el-icon>
             <User />
-          </el-icon> 用户管理
+          </el-icon> {{ t('admin.manageUsers') }}
         </el-button>
       </div>
     </el-card>

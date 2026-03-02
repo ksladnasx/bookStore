@@ -118,249 +118,205 @@ function onReset() {
 
 <template>
   <div class="account-page" :class="{ 'dark-mode': isDark }">
-    <div class="account-backdrop" aria-hidden="true" />
     <div class="account-content">
-      <header class="account-header">
-        <div class="account-header-top">
-          <el-button class="back-btn" :icon="ArrowLeft" text @click="goBack">
-            {{ t('account.back') }}
-          </el-button>
-        </div>
-        <h1 class="account-title">{{ t('account.title') }}</h1>
-        <p class="account-subtitle">{{ t('account.subtitle') }}</p>
-      </header>
+      <el-card class="account-card" :class="{ 'dark-mode': isDark }">
+        <template #header>
+          <div class="account-card-header">
+            <el-button class="back-btn" :icon="ArrowLeft" text @click="goBack">
+              {{ t('account.back') }}
+            </el-button>
+            <h2 class="account-title">{{ t('account.title') }}</h2>
+            <p class="account-subtitle">{{ t('account.subtitle') }}</p>
+          </div>
+        </template>
 
-      <div class="account-card-wrap">
-        <div class="account-card" :class="{ 'dark-mode': isDark }">
-          <div class="account-card-head">
-            <div class="avatar-wrap">
-              <el-avatar :size="64" class="account-avatar">
-                {{ (currentUser?.name ?? 'U').charAt(0).toUpperCase() }}
-              </el-avatar>
-            </div>
-            <div class="account-meta">
-              <span class="account-username">{{ username }}</span>
-              <el-tag size="small" type="info" round>{{ roleLabel }}</el-tag>
+        <div class="account-profile">
+          <el-avatar :size="56" class="account-avatar">
+            {{ (currentUser?.name ?? 'U').charAt(0).toUpperCase() }}
+          </el-avatar>
+          <div class="account-meta">
+            <span class="account-username">{{ username }}</span>
+            <el-tag size="small" type="info" round>{{ roleLabel }}</el-tag>
+          </div>
+        </div>
+
+        <el-form
+          ref="formRef"
+          :model="form"
+          :rules="rules"
+          label-position="top"
+          class="account-form"
+          :class="{ 'dark-mode': isDark }"
+        >
+          <el-form-item :label="t('account.name')" prop="name">
+            <el-input
+              v-model="form.name"
+              :placeholder="t('account.name_placeholder')"
+              clearable
+              :prefix-icon="User"
+            />
+          </el-form-item>
+          <el-form-item :label="t('account.email')" prop="email">
+            <el-input
+              v-model="form.email"
+              :placeholder="t('account.email_placeholder')"
+              clearable
+            />
+          </el-form-item>
+          <el-form-item :label="t('account.username')">
+            <el-input :model-value="username" disabled />
+          </el-form-item>
+          <el-form-item :label="t('account.password_optional')" prop="newPassword">
+            <el-input
+              v-model="form.newPassword"
+              type="password"
+              :placeholder="t('account.password_placeholder')"
+              show-password
+              clearable
+              :prefix-icon="Key"
+            />
+          </el-form-item>
+
+          <el-alert
+            v-if="saveSuccess"
+            :title="t('account.saved')"
+            type="success"
+            show-icon
+            :closable="false"
+            class="save-alert"
+          />
+
+          <div class="form-actions">
+            <el-button @click="goBack">{{ t('account.back') }}</el-button>
+            <div class="form-actions-right">
+              <el-button @click="onReset">{{ t('actions.reset') }}</el-button>
+              <el-button type="primary" :loading="saving" @click="onSubmit">
+                {{ t('account.save') }}
+              </el-button>
             </div>
           </div>
-
-          <el-form
-            ref="formRef"
-            :model="form"
-            :rules="rules"
-            label-position="top"
-            class="account-form"
-            :class="{ 'dark-mode': isDark }"
-          >
-            <el-form-item :label="t('account.name')" prop="name">
-              <el-input
-                v-model="form.name"
-                :placeholder="t('account.name_placeholder')"
-                clearable
-                :prefix-icon="User"
-              />
-            </el-form-item>
-            <el-form-item :label="t('account.email')" prop="email">
-              <el-input
-                v-model="form.email"
-                :placeholder="t('account.email_placeholder')"
-                clearable
-              />
-            </el-form-item>
-            <el-form-item :label="t('account.username')">
-              <el-input :model-value="username" disabled />
-            </el-form-item>
-            <el-form-item :label="t('account.password_optional')" prop="newPassword">
-              <el-input
-                v-model="form.newPassword"
-                type="password"
-                :placeholder="t('account.password_placeholder')"
-                show-password
-                clearable
-                :prefix-icon="Key"
-              />
-            </el-form-item>
-
-            <el-alert
-              v-if="saveSuccess"
-              :title="t('account.saved')"
-              type="success"
-              show-icon
-              :closable="false"
-              class="save-alert"
-            />
-
-            <div class="form-actions">
-              <el-button @click="goBack">{{ t('account.back') }}</el-button>
-              <div class="form-actions-right">
-                <el-button @click="onReset">{{ t('actions.reset') }}</el-button>
-                <el-button type="primary" :loading="saving" @click="onSubmit">
-                  {{ t('account.save') }}
-                </el-button>
-              </div>
-            </div>
-          </el-form>
-        </div>
-      </div>
+        </el-form>
+      </el-card>
     </div>
   </div>
 </template>
 
 <style scoped>
 .account-page {
-  --account-bg: linear-gradient(165deg, #f8f6f3 0%, #ebe8e4 50%, #e2ddd6 100%);
-  --account-card-bg: #fff;
-  --account-text: #2c2825;
-  --account-muted: #6b6560;
-  --account-accent: #b8860b;
-  --account-accent-hover: #9a7209;
-  --account-border: rgba(44, 40, 37, 0.08);
-  --account-shadow: 0 4px 24px rgba(44, 40, 37, 0.06);
-  --account-font-title: 'Georgia', 'Songti SC', serif;
-  --account-font-body: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
   min-height: 60vh;
-  position: relative;
-  padding: 2rem 1rem 4rem;
-  font-family: var(--account-font-body);
-  color: var(--account-text);
+  padding: 24px 16px 48px;
+  /* background: #f5f7fa;   */
   transition: background 0.3s, color 0.3s;
 }
 
 .account-page.dark-mode {
-  --account-bg: linear-gradient(165deg, #1a1918 0%, #222120 50%, #252422 100%);
-  --account-card-bg: #2c2a28;
-  --account-text: #e8e6e3;
-  --account-muted: #a39e97;
-  --account-accent: #d4a84b;
-  --account-accent-hover: #e8bc5c;
-  --account-border: rgba(232, 230, 227, 0.08);
-  --account-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
-}
-
-.account-backdrop {
-  position: absolute;
-  inset: 0;
-  background: var(--account-bg);
-  z-index: 0;
+  background: #121212;
+  color: #e0e0e0;
 }
 
 .account-content {
-  position: relative;
-  z-index: 1;
   max-width: 480px;
   margin: 0 auto;
-  animation: accountReveal 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-
-@keyframes accountReveal {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.account-header {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.account-header-top {
-  text-align: left;
-  margin-bottom: 1rem;
-}
-
-.back-btn {
-  color: var(--account-muted);
-  font-weight: 500;
-}
-
-.back-btn:hover {
-  color: var(--account-accent);
-}
-
-.account-title {
-  font-family: var(--account-font-title);
-  font-size: 1.85rem;
-  font-weight: 600;
-  color: var(--account-text);
-  margin: 0 0 0.5rem;
-  letter-spacing: 0.02em;
-}
-
-.account-subtitle {
-  font-size: 0.95rem;
-  color: var(--account-muted);
-  margin: 0;
-}
-
-.account-card-wrap {
-  animation: cardReveal 0.5s 0.12s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  opacity: 0;
-  transform: translateY(16px);
-}
-
-@keyframes cardReveal {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 .account-card {
-  background: var(--account-card-bg);
-  border-radius: 16px;
-  box-shadow: var(--account-shadow);
-  border: 1px solid var(--account-border);
-  overflow: hidden;
-  padding: 1.75rem 1.5rem;
-  transition: background 0.3s, box-shadow 0.3s, border-color 0.3s;
+  border-radius: 8px;
+  overflow: visible;
 }
 
-.account-card-head {
+.account-card.dark-mode {
+  background: #23272f !important;
+  border-color: #3a3a3c;
+}
+
+.account-card-header {
+  position: relative;
+  padding-right: 80px;
+}
+
+.account-card-header .back-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: #606266;
+}
+
+.account-page.dark-mode .account-card-header .back-btn {
+  color: #a3a6ad;
+}
+
+.account-card-header .back-btn:hover {
+  color: #409eff;
+}
+
+.account-title {
+  margin: 0 0 8px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #303133;
+}
+
+.account-page.dark-mode .account-title {
+  color: #e0e0e0;
+}
+
+.account-subtitle {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #606266;
+}
+
+.account-page.dark-mode .account-subtitle {
+  color: #a3a6ad;
+}
+
+.account-profile {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  padding-bottom: 1.25rem;
-  border-bottom: 1px solid var(--account-border);
+  gap: 16px;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #ebeef5;
 }
 
-.avatar-wrap {
-  flex-shrink: 0;
+.account-page.dark-mode .account-profile {
+  border-bottom-color: #3a3a3c;
 }
 
 .account-avatar {
-  background: var(--account-accent) !important;
+  background: #409eff !important;
   color: #fff !important;
-  font-family: var(--account-font-title);
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 600;
 }
 
 .account-meta {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 6px;
 }
 
 .account-username {
   font-weight: 600;
-  font-size: 1.05rem;
-  color: var(--account-text);
+  font-size: 1rem;
+  color: #303133;
+}
+
+.account-page.dark-mode .account-username {
+  color: #e0e0e0;
 }
 
 .account-form :deep(.el-form-item__label) {
-  color: var(--account-muted);
-  font-weight: 500;
+  color: #606266;
+}
+
+.account-page.dark-mode .account-form :deep(.el-form-item__label) {
+  color: #a3a6ad;
 }
 
 .account-form.dark-mode :deep(.el-input__wrapper) {
   background-color: rgba(255, 255, 255, 0.06);
-  border-color: var(--account-border);
+  border-color: #3a3a3c;
   box-shadow: none;
 }
 
@@ -370,7 +326,7 @@ function onReset() {
 }
 
 .save-alert {
-  margin-bottom: 1rem;
+  margin-bottom: 16px;
 }
 
 .form-actions {
@@ -379,7 +335,7 @@ function onReset() {
   align-items: center;
   flex-wrap: wrap;
   gap: 12px;
-  margin-top: 1.5rem;
+  margin-top: 24px;
 }
 
 .form-actions-right {
@@ -387,25 +343,17 @@ function onReset() {
   gap: 12px;
 }
 
-.form-actions .el-button--primary {
-  background: var(--account-accent);
-  border-color: var(--account-accent);
-}
-
-.form-actions .el-button--primary:hover {
-  background: var(--account-accent-hover);
-  border-color: var(--account-accent-hover);
-}
-
 @media (max-width: 640px) {
   .account-page {
-    padding: 1rem 0.75rem 3rem;
+    padding: 16px 12px 32px;
   }
-  .account-title {
-    font-size: 1.5rem;
+  .account-card-header {
+    padding-right: 0;
+    padding-top: 32px;
   }
-  .account-card {
-    padding: 1.25rem 1rem;
+  .account-card-header .back-btn {
+    top: -8px;
+    right: 0;
   }
 }
 </style>

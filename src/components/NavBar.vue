@@ -2,10 +2,12 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
-
+import { ElMessageBox, ElMessage } from 'element-plus'
+import { useI18n } from 'vue-i18n'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const { t } = useI18n()
 
 const isAuthenticated = computed(() => authStore.isAuthenticated)
 const isAdmin = computed(() => authStore.isAdmin)
@@ -44,8 +46,21 @@ function handleSelect(key: string) {
 }
 
 function logout() {
-  authStore.logout()
-  router.push('/')
+  ElMessageBox.confirm(
+    t('auth.logout_confirm_message'),
+    t('auth.logout_confirm_title'),
+    {
+      confirmButtonText: t('button.confirm'),
+      cancelButtonText: t('button.cancel'),
+      type: 'info'
+    }
+  )
+    .then(() => {
+      authStore.logout()
+      router.push('/')
+      ElMessage.success(t('auth.logout_success'))
+    })
+    .catch(() => {})
 }
 
 import { useI18n } from 'vue-i18n'

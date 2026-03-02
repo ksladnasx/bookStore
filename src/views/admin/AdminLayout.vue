@@ -2,12 +2,14 @@
 import { ref, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useTheme } from '../../stores/theme'
+import { useI18n } from 'vue-i18n'
 
 const route = useRoute()
 const router = useRouter()
 const isCollapse = ref(false)
 const theme = useTheme()
 const isDark = computed(() => theme.isdark)
+const { t } = useI18n()
 
 const handleSelect = (key: string) => {
   router.push(key)
@@ -20,9 +22,8 @@ const handleSelect = (key: string) => {
       <!-- 侧边栏 -->
       <el-aside :width="isCollapse ? '80px' : '200px'" class="sidebar" :class="{ 'dark-mode': isDark }">
         <div class="sidebar-header">
-          <h3 v-if="!isCollapse">Admin Panel</h3>
+          <h3 v-if="!isCollapse">{{ t('admin.panel') }}</h3>
           <el-icon v-else>
-            <!-- 未展开就显示图标 -->
             <Monitor />
           </el-icon>
           <el-button link @click="isCollapse = !isCollapse" class="collapse-btn" >
@@ -40,19 +41,19 @@ const handleSelect = (key: string) => {
         >
           <el-menu-item index="/admin">
             <el-icon><DataBoard /></el-icon>
-            <template #title>Dashboard</template>
+            <template #title>{{ t('admin.dashboard') }}</template>
           </el-menu-item>
           <el-menu-item index="/admin/books">
             <el-icon><Document /></el-icon>
-            <template #title>Books</template>
+            <template #title>{{ t('admin.books') }}</template>
           </el-menu-item>
           <el-menu-item index="/admin/users">
             <el-icon><User /></el-icon>
-            <template #title>Users</template>
+            <template #title>{{ t('admin.users') }}</template>
           </el-menu-item>
           <el-menu-item index="/admin/borrowings">
             <el-icon><Reading /></el-icon>
-            <template #title>Borrowings</template>
+            <template #title>{{ t('admin.borrowings') }}</template>
           </el-menu-item>
         </el-menu>
 
@@ -60,7 +61,7 @@ const handleSelect = (key: string) => {
         <div class="sidebar-footer" :class="{ 'collapsed': isCollapse }">
           <el-button link @click="router.push('/')">
             <el-icon><HomeFilled /></el-icon>
-            <span v-if="!isCollapse">Back to Site</span>
+            <span v-if="!isCollapse">{{ t('admin.backToSite') }}</span>
           </el-button>
         </div>
       </el-aside>
@@ -69,11 +70,9 @@ const handleSelect = (key: string) => {
       <el-container>
         <!-- 顶部栏 -->
         <el-header class="admin-header" :class="{ 'dark-mode': isDark }">
-          <div class="admin-title">Admin Panel</div>
+          <div class="admin-title">{{ t('admin.panel') }}</div>
           <div class="admin-user">
-            <!-- 可放置用户信息/主题切换等 -->
-            <span>Welcome, Admin</span>
-            <!-- 你可以在这里插入 ThemeSwitcher 或头像等组件 -->
+            <span>{{ t('admin.welcome') }}</span>
           </div>
         </el-header>
         <el-main class="admin-main" :class="{ 'dark-mode': isDark }">
