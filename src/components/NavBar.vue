@@ -24,13 +24,10 @@ function handleSelect(key: string) {
     case '3':
       router.push('/my-books')
       break
+    case '5':
+      router.push('/account')
+      break
     case '4':
-      router.push('/admin')
-      break
-    case '6':
-      router.push('/tests')
-      break
-    case 'logout':
       logout()
       break
     case 'login':
@@ -64,9 +61,8 @@ const isDark = computed(() => theme.isdark);
     :class="{ 'dark-mode': isDark }">
     <el-menu-item index="1">{{ $t('layout1') }}</el-menu-item>
     <el-menu-item index="2">{{ $t('layout2') }}</el-menu-item>
-    <template v-if="isAuthenticated">
+      <template v-if="isAuthenticated">
       <el-menu-item index="3">{{ $t('layout3') }}</el-menu-item>
-      <el-menu-item index="6">Tests</el-menu-item>
       <!-- <el-menu-item v-if="isAdmin" index="4">{{ $t('layout4') }}</el-menu-item> -->
     </template>
     <div>
@@ -92,7 +88,8 @@ const isDark = computed(() => theme.isdark);
             </div>
             <span class="username">{{ currentUser?.name }}</span>
           </template>
-          <el-menu-item v-if="isAdmin" index="4">{{ $t('layout4') }}</el-menu-item> 
+          <el-menu-item v-if="isAdmin" index="4">{{ $t('layout4') }}</el-menu-item>
+          <el-menu-item index="5">{{ $t('account.nav') }}</el-menu-item>
           <el-menu-item index="logout">{{ $t('logout') }}</el-menu-item>
         </el-sub-menu>
       </template>

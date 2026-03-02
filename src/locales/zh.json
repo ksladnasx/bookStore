@@ -2,7 +2,8 @@
   "welcome": "欢迎来到 {name}",
   "button": {
     "submit": "提交",
-    "cancel": "取消"
+    "cancel": "取消",
+    "confirm": "确定"
   },
   "app": {
     "title": "掌阅图书馆管理系统",
@@ -65,6 +66,25 @@
   "register.username_min": "用户名必须至少三个字",
   "register.password_required": "请输入密码",
   "register.password_min": "至少6位密码",
-  "register.confirm_required": "请确认您的密码",
-  "register.confirm_error": "注册失败"
+  "register.confirm_error": "注册失败",
+  "account.nav": "个人账户",
+  "account.title": "个人账户",
+  "account.subtitle": "编辑您的个人信息，修改后将同步到当前登录状态",
+  "account.name": "姓名",
+  "account.name_placeholder": "请输入姓名",
+  "account.name_required": "请输入姓名",
+  "account.name_length": "姓名长度为 2～32 个字符",
+  "account.email": "邮箱",
+  "account.email_placeholder": "请输入邮箱",
+  "account.email_required": "请输入邮箱",
+  "account.email_invalid": "请输入有效的邮箱地址",
+  "account.username": "用户名",
+  "account.password_optional": "新密码（选填）",
+  "account.password_placeholder": "留空则不修改密码",
+  "account.password_min": "密码至少 6 位",
+  "account.save": "保存",
+  "account.saved": "保存成功，信息已更新",
+  "account.back": "返回",
+  "account.no_changes_title": "未修改",
+  "account.no_changes": "当前未对个人信息做任何修改，无需保存。"
 }

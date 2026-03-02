@@ -26,6 +26,7 @@ function resetFilters() {
 </script>
 
 <template>
+  <el-backtop :right="60" :bottom="100" style="background-color: transparent;color: red;"/>
   <div class="books-container" :class="{ 'dark-mode': isDark }">
     <div class="books-header">
       <h1>书籍汇总</h1>

@@ -78,7 +78,7 @@ import ServerGroupConfig from './ServerGroupConfig.vue'
 import StrategyConfig from './StrategyConfig.vue'
 import HealthCheckConfig from './HealthCheckConfig.vue'
 import ConfigConfirm from './ConfigConfirm.vue'
-import {fetchElbBackend} from '@/apis/ctyun/index'
+// import {fetchElbBackend} from '@/apis/ctyun/index'
 
 // 当前步骤
 const currentStep = ref(0)

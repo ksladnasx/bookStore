@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { User, LoginCredentials } from '../types'
-import users from '../mockData/users'
+import users, { updateUserById, type UserUpdatePayload } from '../mockData/users'
 
 export const useAuthStore = defineStore('auth', () => {
   const user = localStorage.getItem('user')
@@ -49,6 +49,16 @@ export const useAuthStore = defineStore('auth', () => {
     currentUser.value = null
   }
 
+  function updateProfile(payload: UserUpdatePayload) {
+    if (!currentUser.value) return false
+    const updated = updateUserById(currentUser.value.id, payload)
+    if (!updated) return false
+    const { password, ...forStorage } = updated
+    currentUser.value = { ...forStorage, password: '' }
+    localStorage.setItem('user', JSON.stringify(currentUser.value))
+    return true
+  }
+
   return {
     currentUser,
     loading,
@@ -56,6 +66,7 @@ export const useAuthStore = defineStore('auth', () => {
     isAuthenticated,
     isAdmin, activeIndex, changeactiveIndex,
     login,
-    logout
+    logout,
+    updateProfile
   }
 })
