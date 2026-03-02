@@ -36,18 +36,13 @@ const error = computed(() => authStore.error)
 
 const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
-  await formEl.validate((valid) => {
-    if (valid) {
-      authStore.login(loginForm)
-      const unwatch = authStore.$subscribe((mutation, state) => {
-        if (state.currentUser && !state.loading) {
-          unwatch()
-          const redirectPath = route.query.redirect as string || '/'
-          router.push(redirectPath)
-        }
-      })
-    }
-  })
+  const valid = await formEl.validate().catch(() => false)
+  if (!valid) return
+  await authStore.login(loginForm)
+  if (authStore.currentUser) {
+    const redirectPath = (route.query.redirect as string) || '/'
+    router.push(redirectPath)
+  }
 }
 
 const resetForm = (formEl: FormInstance | undefined) => {

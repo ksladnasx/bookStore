@@ -1,22 +1,31 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import users from '../../mockData/users'
+import { ref, computed, onMounted } from 'vue'
+import { fetchUsers } from '../../api/users'
 import { useBookStore } from '../../stores/books'
+import type { User } from '../../types'
 
 const bookStore = useBookStore()
 const searchQuery = ref('')
 const loading = ref(false)
+const usersList = ref<(Omit<User, 'password'> & { password: '' })[]>([])
+
+onMounted(async () => {
+  loading.value = true
+  try {
+    usersList.value = await fetchUsers()
+  } finally {
+    loading.value = false
+  }
+})
 
 const filteredUsers = computed(() => {
-  if (!searchQuery.value) return users.filter(user => user.role === 'user')
-  
+  const list = usersList.value.filter(user => user.role === 'user')
+  if (!searchQuery.value) return list
   const query = searchQuery.value.toLowerCase()
-  return users.filter(user => 
-    user.role === 'user' && (
-      user.name.toLowerCase().includes(query) ||
-      user.username.toLowerCase().includes(query) ||
-      user.email.toLowerCase().includes(query)
-    )
+  return list.filter(user =>
+    user.name.toLowerCase().includes(query) ||
+    user.username.toLowerCase().includes(query) ||
+    user.email.toLowerCase().includes(query)
   )
 })
 

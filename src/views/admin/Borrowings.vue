@@ -1,19 +1,31 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useBookStore } from '../../stores/books'
-import users from '../../mockData/users'
+import { fetchUsers } from '../../api/users'
+import { returnBorrowing } from '../../api/borrowings'
 import { ElMessageBox, ElMessage } from 'element-plus'
+import type { User } from '../../types'
 
 const bookStore = useBookStore()
 const statusFilter = ref('')
 const searchQuery = ref('')
 const loading = ref(false)
+const usersList = ref<(Omit<User, 'password'> & { password: '' })[]>([])
+
+onMounted(async () => {
+  loading.value = true
+  try {
+    await bookStore.fetchBorrowings()
+    usersList.value = await fetchUsers()
+  } finally {
+    loading.value = false
+  }
+})
 
 const allBorrowings = computed(() => {
   return bookStore.borrowings.map(borrowing => {
-    const user = users.find(u => u.id === borrowing.userId)
+    const user = usersList.value.find(u => u.id === borrowing.userId)
     const book = bookStore.getBookById(borrowing.bookId)
-    
     return {
       ...borrowing,
       userName: user?.name || 'Unknown User',
@@ -25,50 +37,33 @@ const allBorrowings = computed(() => {
 
 const filteredBorrowings = computed(() => {
   let result = allBorrowings.value
-  
   if (statusFilter.value) {
     result = result.filter(b => b.status === statusFilter.value)
   }
-  
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
-    result = result.filter(b => 
+    result = result.filter(b =>
       b.userName.toLowerCase().includes(query) ||
       b.bookTitle.toLowerCase().includes(query) ||
       b.bookAuthor.toLowerCase().includes(query)
     )
   }
-  
   return result
 })
 
-function markAsReturned(borrowingId: number) {
+async function markAsReturned(borrowingId: number) {
   const borrowing = bookStore.borrowings.find(b => b.id === borrowingId)
-  
-  if (borrowing && borrowing.status === 'active') {
-    // Find the book
-    const book = bookStore.getBookById(borrowing.bookId)
-    
-    if (book) {
-      // Remove user from borrowedBy array
-      const index = book.borrowedBy.indexOf(borrowing.userId)
-      if (index !== -1) {
-        // Update book status
-        bookStore.updateBook(book.id, {
-          borrowedBy: book.borrowedBy.filter(id => id !== borrowing.userId),
-          available: true
-        })
-        
-        // Update borrowing record
-        const borrowingIndex = bookStore.borrowings.findIndex(b => b.id === borrowingId)
-        if (borrowingIndex !== -1) {
-          bookStore.borrowings[borrowingIndex].returnDate = new Date().toISOString().split('T')[0]
-          bookStore.borrowings[borrowingIndex].status = 'returned'
-          
-          ElMessage.success('Book marked as returned successfully')
-        }
-      }
-    }
+  if (!borrowing || (borrowing.status !== 'active' && borrowing.status !== 'overdue')) return
+  loading.value = true
+  try {
+    await returnBorrowing(borrowingId)
+    await bookStore.fetchBooks()
+    await bookStore.fetchBorrowings()
+    ElMessage.success('Book marked as returned successfully')
+  } catch (e) {
+    ElMessage.error(e instanceof Error ? e.message : 'Failed to return')
+  } finally {
+    loading.value = false
   }
 }
 
@@ -79,15 +74,11 @@ function confirmReturn(borrowingId: number) {
     {
       confirmButtonText: 'Confirm',
       cancelButtonText: 'Cancel',
-      type: 'warning',
+      type: 'warning'
     }
   )
-    .then(() => {
-      markAsReturned(borrowingId)
-    })
-    .catch(() => {
-      // User cancelled
-    })
+    .then(() => markAsReturned(borrowingId))
+    .catch(() => {})
 }
 
 function resetFilters() {

@@ -5,6 +5,7 @@ import type { FormInstance, FormRules } from 'element-plus'
 import { Edit } from '@element-plus/icons-vue'
 import { useI18n } from 'vue-i18n'
 import { useTheme } from '../stores/theme'
+import { register as registerApi } from '../api/auth'
 
 const router = useRouter()
 const { t } = useI18n()
@@ -19,17 +20,17 @@ const registerForm = reactive({
 
 const rules = reactive<FormRules>({
   username: [
-    { required: true, message: t('register.username_required'), trigger: 'blur' },
-    { min: 3, message: t('register.username_min'), trigger: 'blur' }
+    { required: true, message: () => t('register.username_required'), trigger: 'blur' },
+    { min: 3, message: () => t('register.username_min'), trigger: 'blur' }
   ],
   password: [
-    { required: true, message: t('register.password_required'), trigger: 'blur' },
-    { min: 6, message: t('register.password_min'), trigger: 'blur' }
+    { required: true, message: () => t('register.password_required'), trigger: 'blur' },
+    { min: 6, message: () => t('register.password_min'), trigger: 'blur' }
   ],
   confirmPassword: [
-    { required: true, message: t('register.confirm_required'), trigger: 'blur' },
+    { required: true, message: () => t('register.confirm_required'), trigger: 'blur' },
     {
-      validator: (rule: any, value: string, callback: Function) => {
+      validator: (_rule: unknown, value: string, callback: (e?: Error) => void) => {
         if (value !== registerForm.password) {
           callback(new Error(t('register.confirm_error')))
         } else {
@@ -47,21 +48,27 @@ const error = ref('')
 
 const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
-  await formEl.validate((valid) => {
-    if (valid) {
-      loading.value = true
-      // TODO: 调用注册接口
-      setTimeout(() => {
-        loading.value = false
-        router.push('/login')
-      }, 1000)
-    }
-  })
+  const valid = await formEl.validate().catch(() => false)
+  if (!valid) return
+  error.value = ''
+  loading.value = true
+  try {
+    await registerApi({
+      username: registerForm.username,
+      password: registerForm.password
+    })
+    router.push('/login')
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : t('register.confirm_error')
+  } finally {
+    loading.value = false
+  }
 }
 
 const resetForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return
   formEl.resetFields()
+  error.value = ''
 }
 </script>
 

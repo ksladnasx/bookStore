@@ -68,14 +68,15 @@ const rules = reactive<FormRules>({
 
 const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
-  
-  await formEl.validate((valid) => {
-    if (valid) {
-      bookStore.addBook(bookForm)
-      ElMessage.success('Book added successfully')
-      router.push('/admin/books')
-    }
-  })
+  const valid = await formEl.validate().catch(() => false)
+  if (!valid) return
+  try {
+    await bookStore.addBook(bookForm)
+    ElMessage.success('Book added successfully')
+    router.push('/admin/books')
+  } catch (e) {
+    ElMessage.error(e instanceof Error ? e.message : 'Failed to add book')
+  }
 }
 
 const resetForm = (formEl: FormInstance | undefined) => {

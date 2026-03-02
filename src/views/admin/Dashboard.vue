@@ -1,21 +1,26 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useBookStore } from '../../stores/books'
 import { useRouter } from 'vue-router'
-import users from '../../mockData/users'
-
+import { fetchUsers } from '../../api/users'
+import type { User } from '../../types'
 
 const bookStore = useBookStore()
 const router = useRouter()
+const usersList = ref<(Omit<User, 'password'> & { password: '' })[]>([])
+
+onMounted(async () => {
+  usersList.value = await fetchUsers()
+  await bookStore.fetchBorrowings()
+})
 
 const totalBooks = computed(() => bookStore.books.length)
 const availableBooks = computed(() => bookStore.books.filter(book => book.available).length)
 const borrowedBooks = computed(() => totalBooks.value - availableBooks.value)
-const totalUsers = computed(() => users.filter(user => user.role === 'user').length)
+const totalUsers = computed(() => usersList.value.filter(user => user.role === 'user').length)
 
 const booksByCategory = computed(() => {
   const categories: Record<string, number> = {}
-
   bookStore.books.forEach(book => {
     if (categories[book.category]) {
       categories[book.category]++
@@ -23,7 +28,6 @@ const booksByCategory = computed(() => {
       categories[book.category] = 1
     }
   })
-
   return Object.entries(categories).map(([name, value]) => ({ name, value }))
 })
 
@@ -33,8 +37,7 @@ const recentBorrowings = computed(() => {
     .slice(0, 5)
     .map(borrowing => {
       const book = bookStore.getBookById(borrowing.bookId)
-      const user = users.find(u => u.id === borrowing.userId)
-
+      const user = usersList.value.find(u => u.id === borrowing.userId)
       return {
         id: borrowing.id,
         bookTitle: book?.title || 'Unknown Book',

@@ -1,15 +1,25 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import { useRoute } from 'vue-router';
+import { computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import NavBar from '../components/NavBar.vue'
-import { useTheme } from '../stores/theme';
+import { useTheme } from '../stores/theme'
+import { useBookStore } from '../stores/books'
+import { useAuthStore } from '../stores/auth'
 
-const theme = useTheme();
-const isDark = computed(() => theme.isdark);
-const route = useRoute();
+const theme = useTheme()
+const isDark = computed(() => theme.isdark)
+const route = useRoute()
+const bookStore = useBookStore()
+const authStore = useAuthStore()
 
-// 判断是否为管理后台页面
-const isAdminRoute = computed(() => route.path.startsWith('/admin'));
+const isAdminRoute = computed(() => route.path.startsWith('/admin'))
+
+onMounted(() => {
+  bookStore.fetchBooks()
+  if (authStore.currentUser) {
+    bookStore.fetchBorrowings(authStore.currentUser.id)
+  }
+})
 </script>
 
 <template>

@@ -70,40 +70,38 @@ const rules = reactive<FormRules>({
   ]
 })
 
-onMounted(() => {
-  // Simulate loading delay
-  setTimeout(() => {
-    const book = bookStore.getBookById(bookId.value)
-    
-    if (book) {
-      Object.assign(bookForm, {
-        title: book.title,
-        author: book.author,
-        isbn: book.isbn,
-        publishYear: book.publishYear,
-        category: book.category,
-        description: book.description,
-        coverImage: book.coverImage,
-        quantity: book.quantity
-      })
-      loading.value = false
-    } else {
-      ElMessage.error('Book not found')
-      router.push('/admin/books')
-    }
-  }, 800)
+onMounted(async () => {
+  if (bookStore.books.length === 0) await bookStore.fetchBooks()
+  const book = bookStore.getBookById(bookId.value)
+  if (book) {
+    Object.assign(bookForm, {
+      title: book.title,
+      author: book.author,
+      isbn: book.isbn,
+      publishYear: book.publishYear,
+      category: book.category,
+      description: book.description,
+      coverImage: book.coverImage,
+      quantity: book.quantity
+    })
+  } else {
+    ElMessage.error('Book not found')
+    router.push('/admin/books')
+  }
+  loading.value = false
 })
 
 const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
-  
-  await formEl.validate((valid) => {
-    if (valid) {
-      bookStore.updateBook(bookId.value, bookForm)
-      ElMessage.success('Book updated successfully')
-      router.push('/admin/books')
-    }
-  })
+  const valid = await formEl.validate().catch(() => false)
+  if (!valid) return
+  try {
+    await bookStore.updateBook(bookId.value, bookForm)
+    ElMessage.success('Book updated successfully')
+    router.push('/admin/books')
+  } catch (e) {
+    ElMessage.error(e instanceof Error ? e.message : 'Failed to update book')
+  }
 }
 
 const resetForm = (formEl: FormInstance | undefined) => {

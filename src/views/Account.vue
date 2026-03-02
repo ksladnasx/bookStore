@@ -71,38 +71,37 @@ onMounted(() => {
 
 async function onSubmit() {
   if (!formRef.value) return
-  await formRef.value.validate((valid) => {
-    if (!valid) return
-    if (!hasChanges()) {
-      ElMessageBox.alert(t('account.no_changes'), t('account.no_changes_title'), {
-        confirmButtonText: t('button.confirm'),
-        type: 'info'
-      })
-      return
-    }
-    saving.value = true
-    saveSuccess.value = false
-    const payload: { name: string; email: string; password?: string } = {
-      name: form.name,
-      email: form.email
-    }
-    if (form.newPassword.trim()) payload.password = form.newPassword
-    const ok = authStore.updateProfile(payload)
-    saving.value = false
-    if (ok) {
-      saveSuccess.value = true
-      initialSnapshot.name = form.name
-      initialSnapshot.email = form.email
-      form.newPassword = ''
-      formRef.value?.clearValidate('newPassword')
-      ElMessage.success(t('account.saved'))
-      setTimeout(() => {
-        saveSuccess.value = false
-        authStore.changeactiveIndex('1')
-        router.push('/')
-      }, 800)
-    }
-  })
+  const valid = await formRef.value.validate().catch(() => false)
+  if (!valid) return
+  if (!hasChanges()) {
+    ElMessageBox.alert(t('account.no_changes'), t('account.no_changes_title'), {
+      confirmButtonText: t('button.confirm'),
+      type: 'info'
+    })
+    return
+  }
+  saving.value = true
+  saveSuccess.value = false
+  const payload: { name: string; email: string; password?: string } = {
+    name: form.name,
+    email: form.email
+  }
+  if (form.newPassword.trim()) payload.password = form.newPassword
+  const ok = await authStore.updateProfile(payload)
+  saving.value = false
+  if (ok) {
+    saveSuccess.value = true
+    initialSnapshot.name = form.name
+    initialSnapshot.email = form.email
+    form.newPassword = ''
+    formRef.value?.clearValidate('newPassword')
+    ElMessage.success(t('account.saved'))
+    setTimeout(() => {
+      saveSuccess.value = false
+      authStore.changeactiveIndex('1')
+      router.push('/')
+    }, 800)
+  }
 }
 
 function goBack() {

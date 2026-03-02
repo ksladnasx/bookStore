@@ -13,6 +13,10 @@ const currentUser = computed(() => authStore.currentUser)
 
 
 function handleSelect(key: string) {
+  if (key === 'logout' || key.endsWith('-logout')) {
+    logout()
+    return
+  }
   authStore.changeactiveIndex(key)
   switch (key) {
     case '1':
@@ -28,10 +32,13 @@ function handleSelect(key: string) {
       router.push('/account')
       break
     case '4':
-      logout()
+      router.push('/admin')
       break
     case 'login':
       router.push('/login')
+      break
+    default:
+      if (key === 'admin' || key.startsWith('admin')) router.push('/admin')
       break
   }
 }
@@ -90,7 +97,7 @@ const isDark = computed(() => theme.isdark);
           </template>
           <el-menu-item v-if="isAdmin" index="4">{{ $t('layout4') }}</el-menu-item>
           <el-menu-item index="5">{{ $t('account.nav') }}</el-menu-item>
-          <el-menu-item index="logout">{{ $t('logout') }}</el-menu-item>
+          <el-menu-item index="logout" @click="logout">{{ $t('logout') }}</el-menu-item>
         </el-sub-menu>
       </template>
       <template v-else>
