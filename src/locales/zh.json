@@ -193,5 +193,16 @@
   "admin.updateBookBtn": "更新书籍",
   "admin.bookNotFound": "未找到该书",
   "admin.addBookSuccess": "书籍添加成功",
-  "admin.updateBookSuccess": "书籍更新成功"
+  "admin.updateBookSuccess": "书籍更新成功",
+  "admin.borrowRankTitle": "书籍借阅排行",
+  "admin.rank": "排名",
+  "admin.bookName": "书名",
+  "admin.borrowCount": "借阅次数",
+  "admin.editUser": "编辑用户",
+  "admin.editUserTitle": "编辑用户信息",
+  "admin.saveUser": "保存",
+  "admin.editUserSuccess": "用户信息已更新",
+  "admin.editUserError": "更新失败，请重试",
+  "admin.password": "新密码",
+  "admin.passwordPlaceholder": "不修改请留空"
 }

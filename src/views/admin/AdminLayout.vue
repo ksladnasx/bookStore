@@ -3,13 +3,19 @@ import { ref, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useTheme } from '../../stores/theme'
 import { useI18n } from 'vue-i18n'
+import ThemeSwitcher from '../../components/ThemeSwitcher.vue'
 
 const route = useRoute()
 const router = useRouter()
 const isCollapse = ref(false)
 const theme = useTheme()
 const isDark = computed(() => theme.isdark)
-const { t } = useI18n()
+const { t, locale } = useI18n()
+
+function toggleLanguage() {
+  locale.value = locale.value === 'zh' ? 'en' : 'zh'
+  localStorage.setItem('language', locale.value)
+}
 
 const handleSelect = (key: string) => {
   router.push(key)
@@ -72,6 +78,10 @@ const handleSelect = (key: string) => {
         <el-header class="admin-header" :class="{ 'dark-mode': isDark }">
           <div class="admin-title">{{ t('admin.panel') }}</div>
           <div class="admin-user">
+            <ThemeSwitcher />
+            <el-button class="language-btn" circle @click="toggleLanguage" :title="t('actions.changeLanguage')">
+              {{ locale === 'zh' ? '🇺🇸' : '🇨🇳' }}
+            </el-button>
             <span>{{ t('admin.welcome') }}</span>
           </div>
         </el-header>
@@ -185,8 +195,13 @@ const handleSelect = (key: string) => {
 .admin-user {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
   font-size: 15px;
+}
+
+.admin-user .language-btn {
+  padding: 8px;
+  font-size: 1.1rem;
 }
 .admin-main {
   padding: 32px 24px;

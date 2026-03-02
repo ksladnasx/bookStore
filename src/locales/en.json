@@ -194,5 +194,16 @@
   "admin.updateBookBtn": "Update Book",
   "admin.bookNotFound": "Book not found",
   "admin.addBookSuccess": "Book added successfully",
-  "admin.updateBookSuccess": "Book updated successfully"
+  "admin.updateBookSuccess": "Book updated successfully",
+  "admin.borrowRankTitle": "Book Borrow Ranking",
+  "admin.rank": "Rank",
+  "admin.bookName": "Book",
+  "admin.borrowCount": "Borrows",
+  "admin.editUser": "Edit",
+  "admin.editUserTitle": "Edit User",
+  "admin.saveUser": "Save",
+  "admin.editUserSuccess": "User updated successfully",
+  "admin.editUserError": "Update failed, please try again",
+  "admin.password": "New password",
+  "admin.passwordPlaceholder": "Leave blank to keep current"
 }

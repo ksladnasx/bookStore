@@ -122,9 +122,6 @@ function onReset() {
       <el-card class="account-card" :class="{ 'dark-mode': isDark }">
         <template #header>
           <div class="account-card-header">
-            <el-button class="back-btn" :icon="ArrowLeft" text @click="goBack">
-              {{ t('account.back') }}
-            </el-button>
             <h2 class="account-title">{{ t('account.title') }}</h2>
             <p class="account-subtitle">{{ t('account.subtitle') }}</p>
           </div>
@@ -205,7 +202,9 @@ function onReset() {
 .account-page {
   min-height: 60vh;
   padding: 24px 16px 48px;
-  /* background: #f5f7fa;   */
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
   transition: background 0.3s, color 0.3s;
 }
 
@@ -216,7 +215,7 @@ function onReset() {
 
 .account-content {
   max-width: 480px;
-  margin: 0 auto;
+  width: 100%;
 }
 
 .account-card {
@@ -230,23 +229,7 @@ function onReset() {
 }
 
 .account-card-header {
-  position: relative;
-  padding-right: 80px;
-}
-
-.account-card-header .back-btn {
-  position: absolute;
-  top: 0;
-  right: 0;
-  color: #606266;
-}
-
-.account-page.dark-mode .account-card-header .back-btn {
-  color: #a3a6ad;
-}
-
-.account-card-header .back-btn:hover {
-  color: #409eff;
+  text-align: center;
 }
 
 .account-title {
@@ -346,14 +329,6 @@ function onReset() {
 @media (max-width: 640px) {
   .account-page {
     padding: 16px 12px 32px;
-  }
-  .account-card-header {
-    padding-right: 0;
-    padding-top: 32px;
-  }
-  .account-card-header .back-btn {
-    top: -8px;
-    right: 0;
   }
 }
 </style>

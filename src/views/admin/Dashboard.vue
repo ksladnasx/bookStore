@@ -48,6 +48,14 @@ const recentBorrowings = computed(() => {
       }
     })
 })
+
+const bookBorrowRanking = computed(() => {
+  return [...bookStore.books]
+    .map(b => ({ id: b.id, title: b.title, count: b.borrowedBy.length }))
+    .filter(b => b.count > 0)
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 10)
+})
 </script>
 
 <template>
@@ -138,24 +146,47 @@ const recentBorrowings = computed(() => {
         </el-table>
       </el-card>
 
-      <el-card class="recent-borrowings-card">
-        <template #header>
-          <div class="card-header">
-            <h3>{{ t('admin.recentBorrowings') }}</h3>
-            <el-link type="primary" @click="router.push('/admin/borrowings')">{{ t('admin.all') }} ></el-link>
+      <div class="dashboard-row-two">
+        <el-card class="recent-borrowings-card">
+          <template #header>
+            <div class="card-header">
+              <h3>{{ t('admin.recentBorrowings') }}</h3>
+              <el-link type="primary" @click="router.push('/admin/borrowings')">{{ t('admin.all') }} ></el-link>
+            </div>
+          </template>
+
+          <div v-if="recentBorrowings.length > 0">
+            <el-table :data="recentBorrowings" style="width: 100%">
+              <el-table-column prop="bookTitle" :label="t('admin.book')" />
+              <el-table-column prop="userName" :label="t('admin.user')" />
+              <el-table-column prop="borrowDate" :label="t('admin.date')" width="120" />
+            </el-table>
           </div>
-        </template>
 
-        <div v-if="recentBorrowings.length > 0">
-          <el-table :data="recentBorrowings" style="width: 100%">
-            <el-table-column prop="bookTitle" :label="t('admin.book')" />
-            <el-table-column prop="userName" :label="t('admin.user')" />
-            <el-table-column prop="borrowDate" :label="t('admin.date')" width="120" />
-          </el-table>
-        </div>
+          <el-empty v-else :description="t('admin.noRecentBorrowings')" />
+        </el-card>
 
-        <el-empty v-else :description="t('admin.noRecentBorrowings')" />
-      </el-card>
+        <el-card class="ranking-card">
+          <template #header>
+            <div class="card-header">
+              <h3>{{ t('admin.borrowRankTitle') }}</h3>
+            </div>
+          </template>
+
+          <div v-if="bookBorrowRanking.length > 0" class="ranking-list">
+            <div
+              v-for="(item, index) in bookBorrowRanking"
+              :key="item.id"
+              class="ranking-item"
+            >
+              <span class="ranking-index" :class="{ top: index < 3 }">{{ index + 1 }}</span>
+              <span class="ranking-title">{{ item.title }}</span>
+              <el-tag size="small" type="primary">{{ item.count }}</el-tag>
+            </div>
+          </div>
+          <el-empty v-else :description="t('admin.noRecentBorrowings')" />
+        </el-card>
+      </div>
     </div>
 
     <el-card>
@@ -264,13 +295,67 @@ const recentBorrowings = computed(() => {
 
 .dashboard-row {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  grid-template-columns: 1fr;
   gap: 24px;
 }
 
-.chart-card,
-.recent-borrowings-card {
+.dashboard-row-two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.chart-card {
   height: 100%;
+}
+
+.recent-borrowings-card,
+.ranking-card {
+  min-height: 280px;
+}
+
+.ranking-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ranking-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.ranking-item:last-child {
+  border-bottom: none;
+}
+
+.ranking-index {
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  text-align: center;
+  border-radius: 4px;
+  background: #f0f0f0;
+  color: #606266;
+  font-size: 12px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.ranking-index.top {
+  background: #409eff;
+  color: #fff;
+}
+
+.ranking-title {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
 }
 
 .card-header {
@@ -317,6 +402,10 @@ const recentBorrowings = computed(() => {
 
 @media (max-width: 768px) {
   .dashboard-row {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-row-two {
     grid-template-columns: 1fr;
   }
 
