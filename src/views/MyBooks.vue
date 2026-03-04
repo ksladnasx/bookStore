@@ -3,7 +3,9 @@ import { ref, computed, onMounted } from 'vue'
 import { useBookStore } from '../stores/books'
 import { useAuthStore } from '../stores/auth'
 import { useTheme } from '../stores/theme'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const bookStore = useBookStore()
 const authStore = useAuthStore()
 const loading = ref(true)
@@ -29,8 +31,8 @@ const borrowingHistory = computed(() => {
     const book = bookStore.getBookById(borrowing.bookId)
     return {
       ...borrowing,
-      bookTitle: book?.title || 'Unknown Book',
-      bookAuthor: book?.author || 'Unknown Author',
+      bookTitle: book?.title || t('app.mybook.unknownBook'),
+      bookAuthor: book?.author || t('app.mybook.unknownAuthor'),
       bookCover: book?.coverImage || ''
     }
   })
@@ -54,75 +56,76 @@ const isDark = computed(() => theme.isdark);
 <template>
   <div class="my-books-container">
     <h1 :class="{ 'dark-mode': isDark }"> {{ $t('app.mybook.title') }}</h1>
-    <p :class="{ 'dark-mode': isDark }">Manage your borrowed books and view your borrowing history</p>
+    <p :class="{ 'dark-mode': isDark }">{{ $t('app.mybook.subtitle') }}</p>
 
     <el-tabs>
-      <el-tab-pane label="Currently Borrowed">
+      <el-tab-pane :label="$t('app.mybook.tabCurrent')">
         <el-skeleton v-if="loading" :rows="3" animated />
 
         <template v-else>
           <div v-if="borrowedBooks.length > 0">
             <el-table :data="borrowedBooks" style="width: 100%">
-              <el-table-column label="Cover" width="100">
+              <el-table-column :label="$t('app.mybook.cover')" width="100">
                 <template #default="{ row }">
                   <img :src="row.coverImage" class="book-cover" />
                 </template>
               </el-table-column>
 
-              <el-table-column prop="title" label="Title" />
+              <el-table-column prop="title" :label="$t('app.mybook.titleCol')" />
 
-              <el-table-column prop="author" label="Author" />
+              <el-table-column prop="author" :label="$t('app.mybook.author')" />
 
-              <el-table-column label="Actions" width="120">
+              <el-table-column :label="$t('app.mybook.actions')" width="120">
                 <template #default="{ row }">
                   <el-button type="primary" size="small" @click="returnBook(row.id)">
-                    Return
+                    {{ $t('app.mybook.return') }}
                   </el-button>
                 </template>
               </el-table-column>
             </el-table>
           </div>
 
-          <el-empty v-else description="You don't have any books borrowed at the moment" />
+          <el-empty v-else :description="$t('app.mybook.emptyCurrent')" />
         </template>
       </el-tab-pane>
 
-      <el-tab-pane label="Borrowing History">
+      <el-tab-pane :label="$t('app.mybook.tabHistory')">
         <el-skeleton v-if="loading" :rows="3" animated />
 
         <template v-else>
           <div v-if="borrowingHistory.length > 0">
             <el-table :data="borrowingHistory" style="width: 100%">
-              <el-table-column label="Cover" width="100">
+              <el-table-column :label="$t('app.mybook.cover')" width="100">
                 <template #default="{ row }">
                   <img :src="row.bookCover" class="book-cover" />
                 </template>
               </el-table-column>
 
-              <el-table-column prop="bookTitle" label="Title" />
+              <el-table-column prop="bookTitle" :label="$t('app.mybook.titleCol')" />
 
-              <el-table-column prop="bookAuthor" label="Author" />
+              <el-table-column prop="bookAuthor" :label="$t('app.mybook.author')" />
 
-              <el-table-column prop="borrowDate" label="Borrow Date" />
+              <el-table-column prop="borrowDate" :label="$t('app.mybook.borrowDate')" />
 
-              <el-table-column prop="returnDate" label="Return Date">
+              <el-table-column prop="returnDate" :label="$t('app.mybook.returnDate')">
                 <template #default="{ row }">
-                  {{ row.returnDate || 'Not returned' }}
+                  {{ row.returnDate || $t('app.mybook.notReturned') }}
                 </template>
               </el-table-column>
 
-              <el-table-column label="Status" width="120">
+              <el-table-column :label="$t('app.mybook.status')" width="120">
                 <template #default="{ row }">
                   <el-tag :type="row.status === 'active' ? 'primary' :
                     row.status === 'returned' ? 'success' : 'danger'">
-                    {{ row.status }}
+                    {{ row.status === 'active' ? $t('app.mybook.statusActive') :
+                      row.status === 'returned' ? $t('app.mybook.statusReturned') : $t('app.mybook.statusOverdue') }}
                   </el-tag>
                 </template>
               </el-table-column>
             </el-table>
           </div>
 
-          <el-empty v-else description="You don't have any borrowing history yet" />
+          <el-empty v-else :description="$t('app.mybook.emptyHistory')" />
         </template>
       </el-tab-pane>
     </el-tabs>
